@@ -1,7 +1,7 @@
 /* NexaBir Productivity — service worker
    Bump VERSION on every deploy that changes the demo data or shell assets,
    so returning visitors never see a stale cached build. */
-const VERSION = "nexabir-productivity-v2";
+const VERSION = "nexabir-productivity-v3";
 const CORE = [
   "./",
   "./index.html",

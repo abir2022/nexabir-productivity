@@ -1,92 +1,118 @@
-# NexaBir Productivity
+# PROFILE — NexaBir Productivity (portfolio demo PWA)
 
-A personal command-centre PWA: tasks, notes, focus sessions and analytics — in one offline-capable HTML file.
+## 1. Abstract
 
-## Problem
+NexaBir Productivity is a single-file, offline-capable personal command-centre built
+as a Progressive Web App. It unifies six normally scattered work surfaces — a task
+system (list, kanban and roadmap views over one model), a note workspace with three
+editors (rich-text document, spreadsheet grid, freeform design canvas), a focus &
+plan view (Pomodoro timer, daily MITs, habit streaks, meeting planner), a categorised
+link hub, a monthly personal-KPI scorecard, and an activity-analytics dashboard — into
+one vanilla-JS page with no framework, no build step and no required backend. State is
+persisted first in `localStorage` (key `nexabirProd.v1`), with an optional JSON
+snapshot merge for sharing or resetting. A versioned service worker caches the shell
+so the app installs on desktop and mobile and works with no network. This portfolio
+copy is seeded entirely from synthetic data (fictional team, invented tasks and notes,
+generated session analytics) regenerated for publication. The UI follows a shared
+dark-first design system: Fira Sans / Fira Code, a blue + amber token palette, hover
+lift as feedback, focus-visible rings, reduced-motion support and a ≤450 ms load
+stagger.
 
-Personal work lives scattered across a task list in one app, notes in another, bookmarks in a third, and
-"how did I actually spend this week?" nowhere at all. Nothing connects the tasks I do with the time I spend
-and the tools I use to do them.
+## 2. Problem Framing
 
-## Solution
+Personal and small-team work is fragmented: tasks in a to-do app, notes in a doc tool,
+bookmarks in the browser, focus sessions on a phone timer, and "how did I actually
+spend this week?" answered nowhere. The fragments never join up, so the record of what
+was done, how long it took and which tools were used cannot be reviewed together at
+week's end. The artifact exists to prove that a genuinely useful, installable workspace
+— not a landing page — can live in one HTML file the user fully owns, with no account,
+server or subscription, and to show that offline PWAs can be data-dense and well
+designed, not just app-shell skeletons.
 
-One single-page app that owns all of it locally:
+## 3. Related Practice
 
-- A task board with statuses, priorities, projects, sprints, sub-steps, comments and an assignee picker.
-- A note workspace with three editors — rich-text document, spreadsheet and freeform canvas.
-- A focus & plan view: Pomodoro timer, daily MITs (top 3), habits with streaks, and a meeting planner.
-- A link hub grouping every bookmark by type (dashboard, sheet, doc, other).
-- A KPI view that scores each month against three personal objectives (automation, tooling, reporting).
-- An analytics dashboard fed by a snapshot of my own AI-tool sessions (sessions, tokens, cost, per-day,
-  per-hour, per-model, per-agent).
-- Service-worker offline shell + installable web manifest, so it behaves like a native app.
+The patterns here mirror how knowledge workers actually operate:Getting Things Done /
+MIT (most-important-tasks) for daily top-3 planning; Pomodoro time-boxing for focus;
+kanban (visualise work, limit WIP) for the board; sprint-based roadmaps with
+due-date bars for planning; habit-streak tracking as a consistency-over-intensity
+nudge; personal KPI/OKR scorecards where each work output is mapped to an objective
+with an evidence trail; and weekly-review ledgers that ask "what moved, what slipped,
+what next." Analytics dashboards follow usage-telemetry practice — sessions per day,
+time-of-day distribution, per-model and per-agent breakdowns, cost estimates — the
+same shape an AI-tooling team keeps for itself. None of these need a server; they are
+notebook habits, which is why a local-first app fits.
 
-Everything is stored in `localStorage` first. There is no account, no server and no database required to run it.
+## 4. Methodology & Data Design
 
-## Features
+Conceptually the data model is one JSON object saved under a single `localStorage`
+key; `data/opencode.json` supplies a synthetic seed (tasks, links, notes, work-log)
+the app can merge, and `data/analytics.js` injects a synthetic `window.__ANALYTICS__`
+snapshot (sessions, messages, tokens, cost, sessions-per-day, hour-of-day, day-of-week,
+models, agents, top directories). Transformation steps: seed → `load()` reads
+`localStorage` or falls back to the built-in demo dataset → `renderAll()` recomputes
+aggregations → charts are drawn by hand-rolled canvas helpers (`drawBars`,
+`drawHBar`, `drawLine`) reading CSS variables via `getComputedStyle` so colours stay
+on-palette. Metric definitions: completion rate = done ÷ total tasks; overdue = due
+date before today and status ≠ done; habit streak = consecutive completed days; Pomodoro
+work/break lengths are user-tunable minutes; analytics cost is an estimated USD total
+over token counts. Every figure is invented for the demo.
 
-- **Dashboard** — task KPIs and charts plus AI-usage analytics on one screen.
-- **Tasks / Board / Roadmap** — list, kanban and timeline views of the same task model.
-- **Focus & Plan** — Pomodoro, MITs, habits, streaks, meetings with Google Calendar links.
-- **Notes** — document, spreadsheet and design (canvas) editors, export to HTML/PNG/CSV.
-- **Links** — categorised bookmark hub with add/edit/delete.
-- **KPI** — monthly personal scorecard auto-derived from tagged tasks, with an evidence trail you can copy
-  straight into a sheet.
-- **Requests** — an "ask my assistant" queue that exports to JSON for later review.
-- **Backup** — one-click JSON export of the whole workspace; optional auto-backup.
-- **PWA** — manifest + versioned service worker; installs on desktop and mobile, works offline.
+## 5. Analytical Framework
 
-## Tech stack
+The app encodes a weekly-review loop: capture (tasks, notes, links, meetings) →
+focus (Pomodoro + MITs to do the top things now) → sustain (habit streaks to keep
+consistency visible) → measure (task KPIs, roadmap, monthly KPI scorecard mapping
+outputs to objectives) → reflect (Dashboard analytics + "Ask opencode" day-end review
+suggestions, Requests queue). Status colour bands (open / in progress / review / done /
+blocked / backlog) drive every view from one shared status set, so list, board and
+roadmap always agree. Empty, loading and read-only states are explicit so the tool is
+safe to demo as a shared, non-editable view.
 
-- Vanilla JavaScript (no framework, no build step), single `index.html`
-- CSS custom properties, hand-rolled canvas charts (no chart library)
-- Progressive Web App: `manifest.webmanifest` + `sw.js` service worker with a versioned cache
-- State in `localStorage`; optional JSON snapshot import/sync
-- No dependencies, no bundler, no runtime outside the browser
+## 6. System Design
 
-## Demo data — synthetic
+One `index.html` holds the whole app: inline `<style>` (the design-system layer) and
+one inline `<script>` IIFE, plus a small `data/` folder and `manifest.webmanifest` +
+`sw.js`. No framework, no bundler, no runtime beyond the browser; charts are canvas,
+the spreadsheet is a table of inputs, the document editor is a `contenteditable`
+region. The service worker uses a versioned cache (`nexabir-productivity-v3`):
+install pre-caches the shell, activate deletes every older cache then `clients.claim`,
+GET requests to the two `data/` files are always revalidated (network-first, cache
+fallback) so refreshed demo data appears, and everything else is cache-first with
+background refresh. It is deliberately static/local-first: the PWA and offline story
+are the point, and a single file is trivially hostable and inspectable in a portfolio.
 
-**Every task, note, link, work-log entry and analytics number in this repository is synthetic demo data.**
-The dataset was regenerated for publication: no real personal history, no workplace content, no live
-URLs (they point at `example.com`), and no machine paths. The analytics figures are generated from a fixed
-seed of invented sessions, so the charts render realistically while telling you nothing true about anyone.
+## 7. Findings & Design Decisions
 
-Files:
-- `data/analytics.js` — synthetic usage snapshot injected as `window.__ANALYTICS__`
-- `data/opencode.json` — synthetic task/link/note/worklog snapshot the app can merge
+The data-dense dashboard style carried over well to an app-like tool: KPI and card
+hover-lift, tabular-nums monospace values, and a sticky top bar with a visible
+"Synthetic demo data" chip make it read as a real product, not filler. Key decisions:
+keep all state in one `localStorage` key so reset/export/backup are one call; render
+everything from a single `renderAll()` for predictability over speed at this size;
+hand-roll canvas charts to avoid a library and inherit palette colours from CSS
+variables; replace decorative emoji with inline SVG icons for navigation and controls
+(no emoji-as-icons, and icon-only buttons carry `aria-label`); ship dark-first with a
+persisted light variant that keeps ≥4.5:1 contrast; one ≤450 ms load stagger and
+150–300 ms micro-interactions, all skipped under `prefers-reduced-motion`; responsive
+at 390/768/1024/1440 with wide tables scrolling inside their own card.
 
-## Run locally
+## 8. Limitations & Validity
 
-Static files — any of these works:
+All tasks, notes, links, team members, meetings and analytics numbers are **synthetic**
+and regenerated for publication — no real personal history, workplace content, live
+URLs (they point at `example.com`) or machine paths. The single-file architecture favours
+portability over scale; state lives only in one browser's `localStorage`, so it is not
+multi-device without the optional JSON sync. Canvas charts and the CSV/export helpers
+are intentionally minimal. The "opencode" assistant hooks (Requests queue, day-end
+review) are demo affordances, not a live integration. Claims are about the tool's
+design, not any true productivity result.
 
-```bash
-# 1) Just open it (works offline, service worker registration is skipped on file://)
-open index.html          # macOS
-start index.html         # Windows
+## 9. Reproducibility & Deployment
 
-# 2) Serve it (recommended — enables the service worker and JSON sync)
-python -m http.server 5173
-npx serve .
-```
-
-Then visit `http://localhost:5173`. Clear the workspace any time with **Menu → Reset demo data**.
-
-## Deploy on Vercel
-
-Static import, no build:
-
-1. Import this repository in Vercel.
-2. **Framework preset:** Other · **Build command:** (leave empty) · **Output directory:** repo root.
-3. Deploy — `index.html` is served from the root and the PWA installs as-is.
-
-## Repo layout
-
-```
-index.html              the whole app
-manifest.webmanifest    PWA manifest
-sw.js                   versioned service worker (shell cache + fresh data)
-data/analytics.js       synthetic analytics snapshot
-data/opencode.json      synthetic task/link/worklog snapshot
-icons/                  180 / 192 / 512 app icons
-.nojekyll               static-hosting marker
-```
+Run locally: double-click `index.html` (offline; service worker registration is skipped
+on `file://`), or better, serve it so install + SW work — `npx serve .` or
+`python -m http.server 5173` and open `http://localhost:5173`. Reset anytime via
+Menu → Reset demo data. Deploy: import into Vercel with Framework Preset **Other**,
+no build command, output at the repo root; keep files at their relative paths so the
+service-worker scope and manifest remain valid. After changing shell assets, bump
+`VERSION` in `sw.js` so returning visitors never see a stale cache. No environment
+variables are required.
