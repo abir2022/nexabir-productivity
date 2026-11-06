@@ -1,0 +1,914 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-07T10:00:00Z",
+  "tasks": [
+    {
+      "status": "done",
+      "source": "manual",
+      "priority": "high",
+      "due": "2026-09-07",
+      "tags": [
+        "app",
+        "build"
+      ],
+      "createdAt": "2026-09-06T08:30:00Z",
+      "sources": [],
+      "updates": [
+        {
+          "id": "u1",
+          "text": "Marked done",
+          "at": "2026-09-08T03:27:47.534Z"
+        }
+      ],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": 1,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 1,
+      "id": "t1",
+      "title": "Build the NexaBir Productivity app",
+      "desc": "Dashboard analytics, task board, links and note workspace.",
+      "project": "Productivity"
+    },
+    {
+      "status": "done",
+      "source": "manual",
+      "priority": "high",
+      "due": "2026-09-06",
+      "tags": [
+        "reading"
+      ],
+      "createdAt": "2026-09-05T08:00:00Z",
+      "sources": [
+        {
+          "label": "Reading list",
+          "url": "https://example.com/reading"
+        }
+      ],
+      "updates": [
+        {
+          "id": "u2",
+          "text": "Marked done",
+          "at": "2026-09-06T04:10:00Z"
+        }
+      ],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": 1,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 2,
+      "id": "t2",
+      "title": "Review the weekly reading list",
+      "desc": "Shortlist articles and take notes in the Notes workspace.",
+      "project": "Learning"
+    },
+    {
+      "status": "open",
+      "source": "manual",
+      "priority": "medium",
+      "due": "2026-09-28",
+      "tags": [
+        "finance",
+        "reporting"
+      ],
+      "createdAt": "2026-09-04T16:00:00Z",
+      "sources": [],
+      "updates": [],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": null,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 3,
+      "id": "t3",
+      "title": "Prepare the monthly budget review",
+      "desc": "Consolidate spending categories and chart the trend.",
+      "project": "Finance"
+    },
+    {
+      "status": "done",
+      "source": "manual",
+      "priority": "medium",
+      "due": null,
+      "tags": [],
+      "createdAt": "2026-08-18T08:00:00Z",
+      "sources": [],
+      "updates": [
+        {
+          "id": "u3",
+          "text": "Marked done",
+          "at": "2026-08-19T09:15:00Z"
+        }
+      ],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": null,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 4,
+      "id": "t4",
+      "title": "Set up local dev shortcuts",
+      "desc": "One-click scripts for the everyday workspace.",
+      "project": "Tooling"
+    },
+    {
+      "status": "done",
+      "source": "manual",
+      "priority": "high",
+      "due": null,
+      "tags": [
+        "automation",
+        "finance"
+      ],
+      "createdAt": "2026-08-26T09:00:00Z",
+      "sources": [
+        {
+          "label": "Budget sheet",
+          "url": "https://example.com/budget"
+        }
+      ],
+      "updates": [
+        {
+          "id": "u4",
+          "text": "Marked done",
+          "at": "2026-09-01T10:00:00Z"
+        }
+      ],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": null,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 5,
+      "id": "t5",
+      "title": "Automate the expense categoriser",
+      "desc": "Auto-tag transactions and export a monthly summary.",
+      "project": "Finance"
+    },
+    {
+      "status": "open",
+      "source": "manual",
+      "priority": "medium",
+      "due": "2026-10-05",
+      "tags": [
+        "plan"
+      ],
+      "createdAt": "2026-09-02T09:00:00Z",
+      "sources": [],
+      "updates": [],
+      "tagged": [],
+      "comments": [
+        {
+          "id": "c1",
+          "text": "Block two evenings a week.",
+          "author": "peer",
+          "at": "2026-09-02T12:00:00Z"
+        }
+      ],
+      "type": "task",
+      "points": null,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 6,
+      "id": "t6",
+      "title": "Write the personal learning plan",
+      "desc": "Pick three skills and define weekly practice blocks.",
+      "project": "Learning"
+    },
+    {
+      "status": "in_progress",
+      "source": "manual",
+      "priority": "low",
+      "due": null,
+      "tags": [
+        "housekeeping"
+      ],
+      "createdAt": "2026-09-03T09:00:00Z",
+      "sources": [],
+      "updates": [
+        {
+          "id": "u5",
+          "text": "Moved to in progress",
+          "at": "2026-09-03T11:30:00Z"
+        }
+      ],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": null,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 7,
+      "id": "t7",
+      "title": "Tidy the links collection",
+      "desc": "Archive stale bookmarks and group the rest by area of life.",
+      "project": "Productivity"
+    },
+    {
+      "status": "open",
+      "source": "manual",
+      "priority": "medium",
+      "due": null,
+      "tags": [
+        "habits",
+        "fitness"
+      ],
+      "createdAt": "2026-09-01T06:30:00Z",
+      "sources": [],
+      "updates": [],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": null,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 8,
+      "id": "t8",
+      "title": "Track the workout habit streak",
+      "desc": "Log sessions and keep the streak alive for 30 days.",
+      "project": "Health"
+    },
+    {
+      "status": "open",
+      "source": "manual",
+      "priority": "low",
+      "due": "2026-09-20",
+      "tags": [
+        "planning"
+      ],
+      "createdAt": "2026-09-05T18:00:00Z",
+      "sources": [],
+      "updates": [],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": null,
+      "estimatedHours": null,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 9,
+      "id": "t9",
+      "title": "Plan the weekend trip checklist",
+      "desc": "Transport, stay and budget in one place.",
+      "project": "Travel"
+    },
+    {
+      "status": "review",
+      "source": "manual",
+      "priority": "medium",
+      "due": null,
+      "tags": [
+        "docs",
+        "pwa"
+      ],
+      "createdAt": "2026-09-06T10:00:00Z",
+      "sources": [],
+      "updates": [],
+      "tagged": [],
+      "comments": [],
+      "type": "task",
+      "points": null,
+      "estimatedHours": 2,
+      "assignee": "abir",
+      "sprint": null,
+      "parentId": null,
+      "order": 10,
+      "id": "t10",
+      "title": "Document the offline caching approach",
+      "desc": "Notes on the service worker and cache versioning.",
+      "project": "Productivity"
+    }
+  ],
+  "workLog": [
+    {
+      "id": "w1",
+      "date": "2026-09-05",
+      "summary": "Reviewed the expense categoriser script and cleaned up the budget categories.",
+      "hours": 4.5,
+      "project": "Finance"
+    },
+    {
+      "id": "w2",
+      "date": "2026-09-06",
+      "summary": "Building the NexaBir Productivity app — dashboard analytics, task board, links & note workspace.",
+      "hours": 6,
+      "project": "Productivity"
+    },
+    {
+      "id": "w3",
+      "date": "2026-09-07",
+      "summary": "Two focus blocks on the reading list plus notes written in the Notes workspace.",
+      "hours": 2,
+      "project": "Learning"
+    }
+  ],
+  "links": [
+    {
+      "id": "lk-portfolio",
+      "name": "Portfolio site (demo)",
+      "url": "https://example.com/portfolio",
+      "category": "dashboard",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-repo-gh",
+      "name": "Project tracker (GitHub)",
+      "url": "https://github.com/abir2022/project-tracker",
+      "category": "dashboard",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-habit-sheet",
+      "name": "Habit tracker",
+      "url": "https://example.com/habits",
+      "category": "sheet",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-budget-sheet",
+      "name": "Monthly budget sheet",
+      "url": "https://example.com/budget",
+      "category": "sheet",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-goals",
+      "name": "Personal goals tracker",
+      "url": "https://example.com/goals",
+      "category": "sheet",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-reading",
+      "name": "Reading list",
+      "url": "https://example.com/reading",
+      "category": "sheet",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-fitness",
+      "name": "Workout log",
+      "url": "https://example.com/fitness",
+      "category": "sheet",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-travel",
+      "name": "Travel planner",
+      "url": "https://example.com/travel",
+      "category": "sheet",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-about",
+      "name": "About me",
+      "url": "https://example.com/about",
+      "category": "doc",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-sql-notes",
+      "name": "SQL practice notes",
+      "url": "https://example.com/sql-practice",
+      "category": "doc",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-resume",
+      "name": "Resume dashboard",
+      "url": "https://example.com/resume",
+      "category": "dashboard",
+      "createdAt": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "lk-routine",
+      "name": "Daily routine playbook",
+      "url": "https://example.com/routine",
+      "category": "doc",
+      "createdAt": "2026-09-01T09:00:00Z"
+    }
+  ],
+  "notes": [
+    {
+      "id": "n1",
+      "type": "doc",
+      "title": "Welcome 👋",
+      "content": "<h1>Welcome to NexaBir Productivity</h1><p>Your <b>command centre</b> for tasks, notes, focus sessions and analytics.</p><ul><li>Everything is stored locally in your browser.</li><li>All demo data in this build is synthetic.</li><li>Create more notes with <b>+ New note</b>.</li></ul><blockquote>Tip: switch to the Spreadsheet or Design workspace from the tabs above.</blockquote>",
+      "updatedAt": "2026-09-06T09:00:00Z"
+    },
+    {
+      "id": "n2",
+      "type": "sheet",
+      "title": "Weekly review",
+      "content": "Demo sheet — three columns: what went well, what slipped, next week focus.",
+      "updatedAt": "2026-09-07T09:00:00Z"
+    }
+  ],
+  "analytics": {
+    "generatedAt": "2026-09-06T05:01:26.000Z",
+    "totals": {
+      "sessions": 21,
+      "messages": 3316,
+      "parts": 11775,
+      "todos": 63,
+      "tokensInput": 4230990,
+      "tokensOutput": 213569,
+      "tokensReasoning": 612400,
+      "cost": 0.876
+    },
+    "firstSession": 1786906800000,
+    "lastSession": 1788548400000,
+    "sessionsPerDay": [
+      [
+        "2026-08-16",
+        2
+      ],
+      [
+        "2026-08-17",
+        2
+      ],
+      [
+        "2026-08-18",
+        3
+      ],
+      [
+        "2026-08-19",
+        3
+      ],
+      [
+        "2026-08-22",
+        4
+      ],
+      [
+        "2026-08-25",
+        1
+      ],
+      [
+        "2026-08-26",
+        1
+      ],
+      [
+        "2026-08-28",
+        1
+      ],
+      [
+        "2026-08-29",
+        1
+      ],
+      [
+        "2026-09-01",
+        1
+      ],
+      [
+        "2026-09-03",
+        1
+      ],
+      [
+        "2026-09-04",
+        1
+      ]
+    ],
+    "dayOfWeek": [
+      {
+        "day": "Sun",
+        "count": 2
+      },
+      {
+        "day": "Mon",
+        "count": 2
+      },
+      {
+        "day": "Tue",
+        "count": 5
+      },
+      {
+        "day": "Wed",
+        "count": 4
+      },
+      {
+        "day": "Thu",
+        "count": 1
+      },
+      {
+        "day": "Fri",
+        "count": 2
+      },
+      {
+        "day": "Sat",
+        "count": 5
+      }
+    ],
+    "hourOfDay": [
+      {
+        "hour": 0,
+        "count": 0
+      },
+      {
+        "hour": 1,
+        "count": 1
+      },
+      {
+        "hour": 2,
+        "count": 3
+      },
+      {
+        "hour": 3,
+        "count": 2
+      },
+      {
+        "hour": 4,
+        "count": 0
+      },
+      {
+        "hour": 5,
+        "count": 0
+      },
+      {
+        "hour": 6,
+        "count": 3
+      },
+      {
+        "hour": 7,
+        "count": 0
+      },
+      {
+        "hour": 8,
+        "count": 2
+      },
+      {
+        "hour": 9,
+        "count": 0
+      },
+      {
+        "hour": 10,
+        "count": 0
+      },
+      {
+        "hour": 11,
+        "count": 0
+      },
+      {
+        "hour": 12,
+        "count": 0
+      },
+      {
+        "hour": 13,
+        "count": 0
+      },
+      {
+        "hour": 14,
+        "count": 0
+      },
+      {
+        "hour": 15,
+        "count": 0
+      },
+      {
+        "hour": 16,
+        "count": 0
+      },
+      {
+        "hour": 17,
+        "count": 0
+      },
+      {
+        "hour": 18,
+        "count": 0
+      },
+      {
+        "hour": 19,
+        "count": 5
+      },
+      {
+        "hour": 20,
+        "count": 0
+      },
+      {
+        "hour": 21,
+        "count": 0
+      },
+      {
+        "hour": 22,
+        "count": 5
+      },
+      {
+        "hour": 23,
+        "count": 0
+      }
+    ],
+    "models": [
+      [
+        "demo-model-a",
+        {
+          "count": 7,
+          "cost": 0.2575,
+          "tokensIn": 835096,
+          "tokensOut": 53301
+        }
+      ],
+      [
+        "demo-model-b",
+        {
+          "count": 7,
+          "cost": 0.3079,
+          "tokensIn": 1015514,
+          "tokensOut": 64816
+        }
+      ],
+      [
+        "demo-model-free",
+        {
+          "count": 7,
+          "cost": 0.3106,
+          "tokensIn": 1017331,
+          "tokensOut": 64932
+        }
+      ]
+    ],
+    "agents": [
+      [
+        "build",
+        6
+      ],
+      [
+        "notes",
+        5
+      ],
+      [
+        "plan",
+        5
+      ],
+      [
+        "general",
+        5
+      ]
+    ],
+    "topDirectories": [
+      [
+        "Personal Projects",
+        11
+      ],
+      [
+        "Learning",
+        6
+      ],
+      [
+        "Side Projects",
+        3
+      ],
+      [
+        "Journal",
+        2
+      ],
+      [
+        "Health",
+        2
+      ]
+    ],
+    "todoStatus": {
+      "completed": 48,
+      "in_progress": 3,
+      "pending": 12
+    },
+    "recentSessions": [
+      {
+        "id": "ses_demo_0000",
+        "title": "Plan the weekly reading queue",
+        "model": "demo-model-a",
+        "agent": "build",
+        "cost": 0.013,
+        "tokens": 43000,
+        "created": 1786906800000,
+        "updated": 1786909500000
+      },
+      {
+        "id": "ses_demo_0001",
+        "title": "Set up local dev shortcuts",
+        "model": "demo-model-b",
+        "agent": "notes",
+        "cost": 0.0202,
+        "tokens": 70419,
+        "created": 1786920420000,
+        "updated": 1786923900000
+      },
+      {
+        "id": "ses_demo_0002",
+        "title": "Sketch the dashboard charts",
+        "model": "demo-model-free",
+        "agent": "plan",
+        "cost": 0.0273,
+        "tokens": 97838,
+        "created": 1786937640000,
+        "updated": 1786941900000
+      },
+      {
+        "id": "ses_demo_0003",
+        "title": "Write the note editor spike",
+        "model": "demo-model-a",
+        "agent": "general",
+        "cost": 0.0345,
+        "tokens": 125257,
+        "created": 1786954860000,
+        "updated": 1786959900000
+      },
+      {
+        "id": "ses_demo_0004",
+        "title": "Review the personal budget sheet",
+        "model": "demo-model-b",
+        "agent": "build",
+        "cost": 0.0417,
+        "tokens": 152676,
+        "created": 1787079600000,
+        "updated": 1787085420000
+      },
+      {
+        "id": "ses_demo_0005",
+        "title": "Clean up the habits list",
+        "model": "demo-model-free",
+        "agent": "notes",
+        "cost": 0.0488,
+        "tokens": 180095,
+        "created": 1787093220000,
+        "updated": 1787099820000
+      },
+      {
+        "id": "ses_demo_0006",
+        "title": "Draft the side-project roadmap",
+        "model": "demo-model-a",
+        "agent": "plan",
+        "cost": 0.056,
+        "tokens": 207514,
+        "created": 1787110440000,
+        "updated": 1787117820000
+      },
+      {
+        "id": "ses_demo_0007",
+        "title": "Tidy the links collection",
+        "model": "demo-model-b",
+        "agent": "general",
+        "cost": 0.0632,
+        "tokens": 234933,
+        "created": 1787127660000,
+        "updated": 1787135820000
+      },
+      {
+        "id": "ses_demo_0008",
+        "title": "Build the focus timer",
+        "model": "demo-model-free",
+        "agent": "build",
+        "cost": 0.0229,
+        "tokens": 72352,
+        "created": 1787090880000,
+        "updated": 1787099820000
+      },
+      {
+        "id": "ses_demo_0009",
+        "title": "Log the workout streak",
+        "model": "demo-model-a",
+        "agent": "notes",
+        "cost": 0.03,
+        "tokens": 99771,
+        "created": 1787104500000,
+        "updated": 1787114220000
+      },
+      {
+        "id": "ses_demo_0010",
+        "title": "Refactor the task board",
+        "model": "demo-model-b",
+        "agent": "plan",
+        "cost": 0.0372,
+        "tokens": 127190,
+        "created": 1787364000000,
+        "updated": 1787374500000
+      },
+      {
+        "id": "ses_demo_0011",
+        "title": "Import old notes",
+        "model": "demo-model-free",
+        "agent": "general",
+        "cost": 0.0444,
+        "tokens": 154609,
+        "created": 1787381220000,
+        "updated": 1787392500000
+      },
+      {
+        "id": "ses_demo_0012",
+        "title": "Test offline caching",
+        "model": "demo-model-a",
+        "agent": "build",
+        "cost": 0.0515,
+        "tokens": 182028,
+        "created": 1787425200000,
+        "updated": 1787437260000
+      },
+      {
+        "id": "ses_demo_0013",
+        "title": "Polish the dark theme",
+        "model": "demo-model-b",
+        "agent": "notes",
+        "cost": 0.0587,
+        "tokens": 209447,
+        "created": 1787438820000,
+        "updated": 1787451660000
+      },
+      {
+        "id": "ses_demo_0014",
+        "title": "Add keyboard shortcuts",
+        "model": "demo-model-free",
+        "agent": "plan",
+        "cost": 0.0659,
+        "tokens": 236866,
+        "created": 1787623200000,
+        "updated": 1787636820000
+      },
+      {
+        "id": "ses_demo_0015",
+        "title": "Chart the monthly spending",
+        "model": "demo-model-a",
+        "agent": "general",
+        "cost": 0.0255,
+        "tokens": 74285,
+        "created": 1787724000000,
+        "updated": 1787738400000
+      },
+      {
+        "id": "ses_demo_0016",
+        "title": "Plan the weekend learning block",
+        "model": "demo-model-b",
+        "agent": "build",
+        "cost": 0.0327,
+        "tokens": 101704,
+        "created": 1787943600000,
+        "updated": 1787958780000
+      },
+      {
+        "id": "ses_demo_0017",
+        "title": "Sort the travel checklist",
+        "model": "demo-model-free",
+        "agent": "notes",
+        "cost": 0.0399,
+        "tokens": 129123,
+        "created": 1788040800000,
+        "updated": 1788056760000
+      },
+      {
+        "id": "ses_demo_0018",
+        "title": "Review goal progress",
+        "model": "demo-model-a",
+        "agent": "plan",
+        "cost": 0.047,
+        "tokens": 156542,
+        "created": 1788228000000,
+        "updated": 1788244740000
+      },
+      {
+        "id": "ses_demo_0019",
+        "title": "Prep the weekly review",
+        "model": "demo-model-b",
+        "agent": "general",
+        "cost": 0.0542,
+        "tokens": 183961,
+        "created": 1788415200000,
+        "updated": 1788432720000
+      },
+      {
+        "id": "ses_demo_0020",
+        "title": "Write release notes",
+        "model": "demo-model-free",
+        "agent": "build",
+        "cost": 0.0614,
+        "tokens": 211380,
+        "created": 1788548400000,
+        "updated": 1788566700000
+      }
+    ],
+    "avgSessionMinutes": 96
+  },
+  "review": null,
+  "demoData": true,
+  "demoNote": "Synthetic demo dataset — no real personal or employer data."
+}

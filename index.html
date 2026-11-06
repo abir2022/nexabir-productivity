@@ -1,0 +1,3279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0e1311" />
+<meta name="description" content="NexaBir Productivity — a personal command-centre PWA for tasks, notes, focus sessions and analytics. Demo build with synthetic data." />
+<meta name="author" content="abir2022" />
+<title>NexaBir Productivity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icons/icon-192.png" type="image/png" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+<style>
+  :root {
+    --bg: #0e1311;
+    --bg2: #141b17;
+    --card: #181f1b;
+    --card2: #1e2722;
+    --border: #263029;
+    --border2: #34413a;
+    --text: #e7ede9;
+    --muted: #93a098;
+    --accent: #2fbf8f;
+    --accent2: #35b8a6;
+    --green: #35d39b;
+    --amber: #e0b45a;
+    --red: #e07a72;
+    --violet: #8ba09a;
+    --accent-hover: #46cd9f;
+    --on-accent: #082019;
+    --header-bg: rgba(14,19,17,.82);
+    --scroll: #2c3a33;
+    --hover: #24312b;
+    --glow1: rgba(47,191,143,.12);
+    --glow2: rgba(53,184,166,.10);
+    --chart-label: #8b9a92;
+    --chart-grid: #223029;
+    --chart-value: #e2eae5;
+    --review-text: #b7c6bf;
+    --review-text-b: #d4e0da;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(0,0,0,.28), 0 10px 30px rgba(4,10,7,.42);
+    --accent-soft: rgba(47,191,143,.14);
+    --accent-soft-2: rgba(47,191,143,.38);
+    --accent-strong: rgba(47,191,143,.22);
+    --accent-shadow: rgba(47,191,143,.25);
+    --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --font-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    color-scheme: dark;
+    background:
+      radial-gradient(1100px 560px at 12% -8%, var(--glow1) 0%, transparent 55%),
+      radial-gradient(820px 480px at 100% 0%, var(--glow2) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  body.light {
+    color-scheme: light;
+    --bg: #f6f8f7;
+    --bg2: #edf1ef;
+    --card: #ffffff;
+    --card2: #f0f4f2;
+    --border: #e2e8e5;
+    --border2: #ccd6d1;
+    --text: #16201b;
+    --muted: #5d6b64;
+    --accent: #0e7c5d;
+    --accent2: #11846c;
+    --green: #159a6d;
+    --amber: #b97e12;
+    --red: #c2403a;
+    --violet: #6b7a73;
+    --accent-hover: #0a6a4f;
+    --on-accent: #ffffff;
+    --header-bg: rgba(246,248,247,.85);
+    --scroll: #c2ccc7;
+    --hover: #e5ece8;
+    --glow1: rgba(14,124,93,.08);
+    --glow2: rgba(17,132,108,.07);
+    --chart-label: #64726b;
+    --chart-grid: #e2e8e5;
+    --chart-value: #1c2621;
+    --review-text: #5b6b64;
+    --review-text-b: #3f4f48;
+    --shadow: 0 1px 2px rgba(20,32,27,.05), 0 10px 30px rgba(20,32,27,.07);
+    --accent-soft: rgba(14,124,93,.12);
+    --accent-soft-2: rgba(14,124,93,.32);
+    --accent-strong: rgba(14,124,93,.18);
+    --accent-shadow: rgba(14,124,93,.28);
+  }
+
+  .app { max-width: 1280px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--header-bg); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+  .header-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .logo {
+    width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent); color: var(--on-accent);
+    display: grid; place-items: center; font-weight: 800; font-size: 18px;
+    font-family: var(--font-display); box-shadow: 0 4px 14px var(--accent-shadow);
+  }
+  .brand h1 { font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: -.2px; }
+  .brand small { color: var(--muted); font-size: 11px; display: block; }
+
+  nav { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+  nav button {
+    background: transparent; color: var(--muted); border: 1px solid transparent;
+    padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 13.5px; font-weight: 600;
+    display: flex; align-items: center; gap: 7px; transition: .16s;
+  }
+  nav button:hover { color: var(--text); background: var(--card); }
+  nav button.active { color: var(--text); background: var(--accent-soft); border-color: var(--accent-soft-2); }
+  nav button .dot { font-size: 15px; }
+
+  .sync-status { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .sync-status .pill { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); display: inline-block; }
+  .sync-status.ok .pill { background: var(--green); }
+
+  /* Layout */
+  .view { display: none; animation: fade .2s ease; }
+  .view.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .page-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 26px 0 6px; flex-wrap: wrap; }
+  .page-title h2 { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -.4px; }
+  .page-title p { color: var(--muted); font-size: 13px; margin-top: 3px; }
+
+  .btn {
+    background: var(--accent); color: var(--on-accent); border: none; padding: 9px 15px; border-radius: 10px; cursor: pointer;
+    font-size: 13px; font-weight: 650; display: inline-flex; align-items: center; gap: 7px;
+    transition: transform .15s, box-shadow .15s, background .15s;
+    box-shadow: 0 2px 10px var(--accent-shadow);
+  }
+  .btn:hover { background: var(--accent-hover); box-shadow: 0 4px 16px var(--accent-shadow); }
+  .btn:active { transform: scale(.97); }
+  .btn.ghost { background: var(--card2); border: 1px solid var(--border2); color: var(--text); }
+  .btn.ghost:hover { background: var(--hover); }
+  .btn.small { padding: 6px 11px; font-size: 12px; border-radius: 8px; }
+  .btn.danger { background: rgba(248,113,113,.14); color: var(--red); border: 1px solid rgba(248,113,113,.3); }
+  .btn.danger:hover { background: rgba(248,113,113,.22); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+  .grid { display: grid; gap: 16px; }
+
+  /* KPI */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+  .kpi .k-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+  .kpi .k-value { font-family: var(--font-display); font-size: 26px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; letter-spacing: -.3px; }
+  .kpi .k-sub { color: var(--muted); font-size: 11.5px; margin-top: 4px; }
+  .kpi.accent .k-value { color: var(--accent2); }
+
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .chart-card h3 .tag { font-size: 10.5px; color: var(--muted); font-weight: 600; }
+  canvas { width: 100%; height: auto; display: block; }
+
+.two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+.dash-sep { margin: 6px 0 18px; border-top: 1px solid var(--border); padding-top: 18px; }
+.dash-sep h3 { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--muted); letter-spacing: -.2px; }
+.overdue-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.overdue-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px; }
+.overdue-item .od-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.overdue-item .od-meta { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  .badge { font-size: 11px; font-weight: 650; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .badge.open { background: var(--accent-soft); color: var(--accent); }
+  .badge.progress { background: rgba(251,191,36,.16); color: var(--amber); }
+  .badge.done { background: rgba(52,211,153,.16); color: var(--green); }
+  .badge.review { background: var(--accent-soft); color: var(--accent2); }
+  .badge.blocked { background: rgba(248,113,113,.16); color: var(--red); }
+  .badge.backlog { background: rgba(148,163,184,.18); color: var(--muted); }
+  .badge.auto { background: var(--accent-soft); color: var(--accent2); }
+  .badge.opencode { background: var(--card2); color: var(--muted); border: 1px solid var(--border2); }
+  .badge.manual { background: rgba(62,207,158,.14); color: var(--green); }
+  .badge.pending { background: rgba(251,191,36,.16); color: var(--amber); }
+  .badge.approved { background: rgba(52,211,153,.16); color: var(--green); }
+  .badge.rejected { background: rgba(248,113,113,.16); color: var(--red); }
+  .badge.high { background: rgba(248,113,113,.16); color: var(--red); }
+  .badge.med { background: rgba(251,191,36,.16); color: var(--amber); }
+  .badge.low { background: rgba(52,211,153,.16); color: var(--green); }
+
+  /* Tasks */
+  .task-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chip { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 6px 13px; border-radius: 20px; cursor: pointer; font-size: 12.5px; font-weight: 600; }
+  .chip.active { color: var(--text); background: var(--accent-soft); border-color: var(--accent-soft-2); }
+
+  .task-item { display: flex; gap: 14px; align-items: flex-start; padding: 15px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); margin-bottom: 10px; transition: .14s; }
+  .task-item:hover { border-color: var(--border2); }
+  .task-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border2); margin-top: 1px; cursor: pointer; display: grid; place-items: center; font-size: 12px; color: #04122b; flex-shrink: 0; }
+  .task-check.done { background: var(--green); border-color: var(--green); }
+  .task-body { flex: 1; }
+  .task-title { font-weight: 600; font-size: 14.5px; letter-spacing: -.1px; }
+  .task-title.done-t { text-decoration: line-through; color: var(--muted); }
+  .task-desc { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+  .task-meta { display: flex; gap: 8px; margin-top: 9px; flex-wrap: wrap; align-items: center; }
+  .task-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .task-sources { display: flex; gap: 6px 8px; margin-top: 9px; flex-wrap: wrap; align-items: center; font-size: 12px; }
+  .src-link { color: var(--accent); text-decoration: none; border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; background: var(--bg); }
+  .src-link:hover { border-color: var(--accent); }
+  .src-link.path { color: var(--muted); border-style: dashed; cursor: default; }
+  .src-wrap { display: inline-flex; align-items: center; gap: 3px; }
+  .src-del { border: none; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; line-height: 1; padding: 0 3px; border-radius: 50%; }
+  .src-del:hover { color: var(--red); background: rgba(248,113,113,.12); }
+  .src-add { color: var(--accent); background: transparent; border: 1px dashed var(--border2); border-radius: 999px; padding: 2px 9px; cursor: pointer; font-size: 12px; }
+  .src-add:hover { border-color: var(--accent); }
+
+  .notice { border: 1px dashed var(--border2); background: var(--accent-soft); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.55; }
+  .notice b { color: var(--text); }
+
+  /* Links */
+  .link-card { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); margin-bottom: 10px; }
+  .link-ico { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 17px; font-weight: 700; flex-shrink: 0; }
+  .link-body { flex: 1; min-width: 0; }
+  .link-name { font-weight: 650; font-size: 14px; }
+  .link-url { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .link-card a { color: var(--accent); text-decoration: none; font-size: 12.5px; font-weight: 600; }
+
+  /* Notes */
+  .note-subtabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .note-sidebar { display: flex; gap: 14px; }
+  .note-list { width: 230px; flex-shrink: 0; }
+  .note-item { padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px; font-size: 13px; color: var(--muted); border: 1px solid transparent; }
+  .note-item:hover { background: var(--card); }
+  .note-item.active { background: var(--card2); color: var(--text); border-color: var(--border2); }
+  .note-main { flex: 1; min-width: 0; }
+
+  .toolbar { display: flex; gap: 5px; flex-wrap: wrap; padding: 8px; border: 1px solid var(--border); border-radius: 10px 10px 0 0; background: var(--card2); }
+  .toolbar button, .toolbar select, .toolbar input[type=color] { background: transparent; border: 1px solid var(--border2); color: var(--text); border-radius: 7px; padding: 5px 9px; cursor: pointer; font-size: 12.5px; min-width: 30px; }
+  .toolbar button:hover { background: var(--hover); }
+  .toolbar button.on { background: var(--accent-strong); border-color: var(--accent); }
+
+  .editor { min-height: 420px; border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px; padding: 20px 24px; background: var(--bg2); outline: none; font-size: 14.5px; line-height: 1.7; }
+  .editor:focus { border-color: var(--border2); }
+  .editor h1 { font-size: 22px; margin: 14px 0 8px; }
+  .editor h2 { font-size: 18px; margin: 12px 0 6px; }
+  .editor h3 { font-size: 15px; margin: 10px 0 5px; }
+  .editor ul, .editor ol { padding-left: 22px; margin: 6px 0; }
+  .editor blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); margin: 8px 0; }
+  .editor a { color: var(--accent2); }
+
+  /* Spreadsheet */
+  .sheet-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--bg2); }
+  .sheet-wrap table { border-collapse: collapse; }
+  .sheet-wrap th.corner { min-width: 40px; background: var(--card2); position: sticky; left: 0; top: 0; z-index: 3; }
+  .sheet-wrap th { background: var(--card2); position: sticky; top: 0; z-index: 2; padding: 4px 6px; text-align: center; min-width: 84px; }
+  .sheet-wrap th.rowh { position: sticky; left: 0; z-index: 1; background: var(--card2); min-width: 40px; }
+  .sheet-wrap td input { width: 100%; background: transparent; border: 1px solid transparent; color: var(--text); padding: 6px 8px; font-size: 13px; outline: none; min-width: 84px; }
+  .sheet-wrap td input:focus { border-color: var(--accent); background: var(--hover); }
+  .sheet-wrap td.sel { background: var(--accent-soft); }
+
+  /* Design canvas */
+  .canvas-stage { position: relative; border: 1px solid var(--border); border-radius: 12px; background: #fff; overflow: hidden; }
+  .canvas-stage canvas { display: block; cursor: crosshair; }
+
+  /* Modal */
+  .modal-back { position: fixed; inset: 0; background: rgba(4,7,14,.7); backdrop-filter: blur(4px); z-index: 100; display: none; place-items: center; padding: 20px; }
+  .modal-back.show { display: grid; }
+  .modal { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; padding: 22px; width: 100%; max-width: 520px; box-shadow: var(--shadow); }
+  .modal h3 { font-size: 17px; margin-bottom: 14px; }
+  .field { margin-bottom: 13px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 5px; }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border2); color: var(--text);
+    border-radius: 9px; padding: 9px 11px; font-size: 13.5px; font-family: inherit; outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+  .field textarea { min-height: 80px; resize: vertical; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 8px; }
+
+  .empty { text-align: center; color: var(--muted); padding: 46px 20px; font-size: 13.5px; }
+  .empty .big { font-size: 34px; margin-bottom: 10px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .spacer { flex: 1; }
+
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card2); border: 1px solid var(--border2); color: var(--text); padding: 11px 18px; border-radius: 12px; font-size: 13px; z-index: 200; box-shadow: var(--shadow); transition: .25s; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* --- Header controls: search, bell, export --- */
+  .hdr-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .search-wrap { position: relative; }
+  .search-wrap .icon { position: absolute; left: 10px; top: 9px; opacity: .45; font-size: 13px; pointer-events: none; }
+  .search-wrap input { background: var(--card); border: 1px solid var(--border2); color: var(--text); border-radius: 10px; padding: 8px 12px 8px 30px; font-size: 13px; width: 190px; outline: none; transition: .15s; }
+  .search-wrap input:focus { border-color: var(--accent); width: 240px; }
+  .search-results { position: absolute; top: 42px; right: 0; width: 360px; background: var(--card); border: 1px solid var(--border2); border-radius: 12px; box-shadow: var(--shadow); z-index: 90; max-height: 420px; overflow: auto; display: none; }
+  .search-results.show { display: block; }
+  .search-res { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); }
+  .search-res:hover { background: var(--card2); }
+  .search-res .sr-type { font-size: 10px; color: var(--accent2); text-transform: uppercase; letter-spacing: .4px; font-weight: 700; }
+  .search-res .sr-title { font-size: 13px; font-weight: 600; margin: 1px 0; }
+  .search-res .sr-sub { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .bell-wrap { position: relative; }
+  .bell { background: var(--card); border: 1px solid var(--border2); color: var(--muted); font-size: 17px; cursor: pointer; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; }
+  .bell .count { position: absolute; top: -6px; right: -6px; background: var(--red); color: #fff; font-size: 10px; border-radius: 10px; padding: 1px 5px; font-weight: 700; }
+  .bell-drop { position: absolute; top: 44px; right: 0; width: 340px; background: var(--card); border: 1px solid var(--border2); border-radius: 12px; box-shadow: var(--shadow); z-index: 90; display: none; max-height: 400px; overflow: auto; padding: 6px; }
+  .bell-drop.show { display: block; }
+
+  .menu-wrap { position: relative; }
+  .menu-drop { position: absolute; top: 42px; right: 0; background: var(--card); border: 1px solid var(--border2); border-radius: 12px; box-shadow: var(--shadow); z-index: 90; display: none; min-width: 200px; padding: 6px; }
+  .menu-drop.show { display: block; }
+  .menu-drop button { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); padding: 9px 12px; font-size: 13px; cursor: pointer; border-radius: 8px; }
+  .menu-drop button:hover { background: var(--card2); }
+  .menu-drop .sep { height: 1px; background: var(--border); margin: 5px 4px; }
+
+  /* --- Alerts --- */
+  .alerts { display: none; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .alerts.show { display: flex; }
+  .alert { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 10px; font-size: 13px; }
+  .alert .a-title { font-weight: 650; }
+  .alert.overdue { background: rgba(248,113,113,.12); border: 1px solid rgba(248,113,113,.32); }
+  .alert.today { background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.32); }
+  .alert.soon { background: var(--accent-soft); border: 1px solid var(--accent-soft-2); }
+
+  /* --- Focus & Plan --- */
+  .focus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .focus-grid { grid-template-columns: 1fr; } }
+  .pomo { text-align: center; }
+  .pomo .mode-tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 16px; }
+  .pomo .ring { margin: 8px auto; width: 210px; height: 210px; border-radius: 50%; border: 8px solid var(--border2); display: grid; place-items: center; }
+  .pomo .timer { font-family: var(--font-mono); font-size: 52px; font-weight: 600; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+  .pomo .timer small { font-size: 14px; color: var(--muted); font-weight: 600; display: block; }
+  .pomo .controls { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+  .pomo .focus-label { margin-top: 12px; }
+  .pomo .focus-label input { width: 100%; background: var(--bg2); border: 1px solid var(--border2); color: var(--text); border-radius: 9px; padding: 8px 12px; font-size: 13px; outline: none; text-align: center; }
+
+  .mit-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .mit-rank { width: 26px; height: 26px; border-radius: 50%; background: var(--card2); display: grid; place-items: center; font-weight: 800; font-size: 13px; color: var(--accent2); flex-shrink: 0; }
+  .mit-row input { flex: 1; background: var(--bg2); border: 1px solid var(--border2); color: var(--text); border-radius: 9px; padding: 8px 12px; font-size: 13.5px; outline: none; }
+  .mit-row input:focus { border-color: var(--accent); }
+
+  .habit-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: var(--card); }
+  .habit-check { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--border2); cursor: pointer; display: grid; place-items: center; font-size: 14px; color: #04122b; flex-shrink: 0; }
+  .habit-check.done { background: var(--green); border-color: var(--green); }
+  .habit-streak { margin-left: auto; font-size: 12px; color: var(--amber); font-weight: 700; white-space: nowrap; }
+
+  .meeting-item { padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: var(--card); }
+  .meeting-item .m-when { font-size: 11.5px; color: var(--accent2); font-weight: 600; }
+
+  .proj-group { margin-bottom: 20px; }
+  .proj-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .proj-head .p-name { font-weight: 700; font-size: 14px; }
+  .proj-head .p-count { color: var(--muted); font-size: 12px; }
+  .proj-bar { height: 6px; border-radius: 4px; background: var(--card2); overflow: hidden; flex: 1; max-width: 220px; }
+  .proj-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); transition: .3s; }
+
+  .review-out { white-space: pre-wrap; font-size: 13px; line-height: 1.6; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; max-height: 440px; overflow: auto; }
+  .seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .seg .mini { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .seg .mini .mv { font-size: 20px; font-weight: 800; }
+  .seg .mini .ml { font-size: 11px; color: var(--muted); }
+  .print-area { display: none; }
+  @media print {
+    body * { visibility: hidden; }
+    .print-area, .print-area * { visibility: visible; }
+    .print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; background: #fff; color: #000; padding: 24px; }
+    .print-area .ph { font-size: 20px; font-weight: 800; }
+  }
+
+  /* --- Task updates & opencode advisory --- */
+  .task-updates { margin-top: 10px; border-left: 2px solid var(--border2); padding-left: 12px; display: flex; flex-direction: column; gap: 5px; }
+  .upd { font-size: 12px; color: var(--muted); line-height: 1.45; }
+  .upd .upd-at { display: inline-block; color: var(--accent2); font-family: var(--font-mono); font-size: 10.5px; margin-right: 7px; }
+  .task-review { margin-top: 10px; padding: 9px 12px; border-radius: 9px; background: var(--card2); border: 1px solid var(--border2); font-size: 12.5px; color: var(--review-text); line-height: 1.5; }
+  .task-review b { color: var(--review-text-b); }
+  .review-card { margin-top: 16px; padding: 14px 16px; border-radius: 12px; background: var(--accent-soft); border: 1px solid var(--accent-soft-2); }
+  .review-card .rc-head { font-family: var(--font-display); font-weight: 700; font-size: 13.5px; letter-spacing: -.1px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .review-card .rc-body { font-size: 13px; color: var(--text); line-height: 1.55; white-space: pre-wrap; }
+  .review-card .rc-meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--accent2); margin-top: 8px; }
+
+  .modal h3 { font-family: var(--font-display); letter-spacing: -.2px; }
+  .chart-card h3 { font-family: var(--font-display); }
+  .link-name { font-family: var(--font-display); }
+  .chip, .task-check, .habit-check, .src-add, .src-del { transition: transform .15s, background .15s, border-color .15s; }
+  .chip:active, .src-add:active { transform: scale(.95); }
+  .task-check:active, .habit-check:active { transform: scale(.88); }
+  .mini .mv { font-family: var(--font-display); font-variant-numeric: tabular-nums; }
+
+  /* --- Read-only shared view --- */
+  .ro-banner { display: flex; align-items: center; gap: 8px; background: var(--accent-soft); border: 1px solid var(--accent-soft-2); color: var(--text); padding: 11px 16px; border-radius: 12px; font-size: 13px; margin: 16px 0; }
+  body.readonly #reqTaskBtn, body.readonly #reqListBtn,
+  body.readonly #addLinkBtn, body.readonly #newNoteBtn,
+  body.readonly .task-actions, body.readonly .task-check,
+  body.readonly .link-card button,
+  body.readonly #doc-del, body.readonly #sh-del, body.readonly #ds-del,
+  body.readonly #sh-addrow, body.readonly #sh-addcol,
+  body.readonly #reviewEmail, body.readonly #saveGithubBtn,
+  body.readonly #nav button[data-view="focus"] { display: none !important; }
+
+  /* --- Board (Kanban) --- */
+  .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; padding-bottom: 10px; }
+  .board-col { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px; min-height: 200px; }
+  .board-col-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 10px; font-weight: 600; }
+  .board-col-head .cnt { font-size: 12px; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; }
+  .board-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: grab; transition: .12s; }
+  .board-card:hover { border-color: var(--border2); }
+  .board-card.dragging { opacity: .45; }
+  .board-col.drag-over { border-color: var(--accent); background: var(--accent-soft); }
+  .board-card .bt { font-weight: 600; font-size: 13px; }
+  .board-card .bm { font-size: 12px; color: var(--muted); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .board-empty { color: var(--muted); font-size: 12px; text-align: center; padding: 14px 0; }
+  .sub-progress { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .sub-progress .sp-track { flex: 1; max-width: 130px; height: 6px; background: var(--bg2); border-radius: 4px; overflow: hidden; }
+  .sub-progress .sp-fill { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 4px; transition: width .2s; }
+  .sub-progress .sp-label { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .steps-block { display: flex; flex-direction: column; gap: 3px; margin-top: 7px; padding: 8px 10px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; }
+  .step { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: var(--text); cursor: pointer; line-height: 1.35; }
+  .step input { margin-top: 3px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+  .step.done span { text-decoration: line-through; color: var(--muted); }
+  .step-count { font-size: 11px; color: var(--muted); font-weight: 700; }
+
+  /* --- Roadmap / timeline --- */
+  .roadmap-group { margin-bottom: 20px; }
+  .roadmap-group > h3 { font-size: 14px; margin: 0 0 10px; }
+  .roadmap-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .roadmap-row .r-title { flex: 0 0 220px; font-size: 13px; }
+  .roadmap-row .r-title .r-meta { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .roadmap-track { flex: 1; position: relative; height: 26px; background: var(--bg2); border-radius: 7px; overflow: hidden; }
+  .roadmap-bar { position: absolute; top: 4px; height: 18px; border-radius: 6px; background: var(--accent-soft); border: 1px solid var(--accent-soft-2); color: var(--accent); font-size: 11px; font-weight: 600; line-height: 16px; padding: 0 8px; white-space: nowrap; overflow: hidden; }
+  .roadmap-bar.st-progress { background: rgba(251,191,36,.16); border-color: rgba(251,191,36,.42); color: var(--amber); }
+  .roadmap-bar.st-review { background: var(--accent-soft); border-color: var(--accent-soft-2); color: var(--accent2); }
+  .roadmap-bar.st-done { background: rgba(52,211,153,.16); border-color: rgba(52,211,153,.42); color: var(--green); }
+  .roadmap-bar.st-blocked { background: rgba(248,113,113,.16); border-color: rgba(248,113,113,.42); color: var(--red); }
+  .roadmap-bar.st-backlog { background: rgba(148,163,184,.18); border-color: rgba(148,163,184,.42); color: var(--muted); }
+  .roadmap-bar .lbl { opacity: .95; }
+
+  /* --- Comments --- */
+  .comment { border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; margin-bottom: 8px; }
+  .comment .c-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .comment .c-body { font-size: 13px; }
+
+  /* --- Identity picker --- */
+  #mePicker { display: inline-flex; align-items: center; gap: 6px; }
+  #mePicker select { background: var(--bg2); border: 1px solid var(--border2); color: var(--text); border-radius: 7px; padding: 4px 8px; font-family: inherit; font-size: 12.5px; }
+
+  /* --- Polish: focus, selection, motion --- */
+  ::selection { background: var(--accent-soft); color: var(--text); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  button, a, .chip, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  }
+
+  /* --- Login / auth --- */
+  .login-screen {
+    position: fixed; inset: 0; z-index: 400; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(8,12,10,.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .login-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    padding: 34px 32px; width: 360px; max-width: calc(100vw - 32px);
+    box-shadow: 0 24px 70px rgba(0,0,0,.45);
+  }
+  .login-logo {
+    width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center;
+    background: var(--accent); color: var(--on-accent); font-family: var(--font-display);
+    font-weight: 800; font-size: 24px; margin-bottom: 16px;
+  }
+  .login-card h2 { font-family: var(--font-display); font-size: 21px; letter-spacing: -.3px; margin: 0 0 4px; }
+  .login-sub { color: var(--muted); font-size: 13px; margin: 0 0 22px; }
+  .login-error { background: rgba(248,113,113,.12); border: 1px solid rgba(248,113,113,.3); color: var(--red); font-size: 12.5px; padding: 9px 11px; border-radius: 9px; margin-bottom: 14px; }
+
+  /* --- Monthly KPI tracker --- */
+  #view-kpi select { background: var(--bg2); border: 1px solid var(--border2); color: var(--text); border-radius: 9px; padding: 8px 10px; font-size: 13px; font-family: inherit; }
+  .kpi-head, .kpi-row {
+    display: grid; grid-template-columns: 2.2fr .7fr .7fr .8fr .7fr 1fr 1.6fr; gap: 10px; align-items: center;
+  }
+  .kpi-head { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 700; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px 12px 0 0; background: var(--bg2); }
+  .kpi-row { border: 1px solid var(--border); border-top: none; padding: 14px; background: var(--card); }
+  .kpi-row:last-of-type { border-radius: 0 0 12px 12px; }
+  .kpi-cell label { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); font-weight: 700; margin-bottom: 5px; }
+  .kpi-charter { font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+  .kpi-title { font-weight: 650; font-size: 14px; margin: 3px 0; }
+  .kpi-def { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .kpi-big { font-size: 20px; font-weight: 750; font-family: var(--font-display); }
+  .kpi-tgt { width: 100%; background: var(--bg2); border: 1px solid var(--border2); color: var(--text); border-radius: 9px; padding: 8px 10px; font-size: 16px; font-weight: 700; }
+  .kpi-evd { font-size: 12px; line-height: 1.5; }
+  .kpi-evd-title { font-weight: 650; display: block; }
+  .kpi-evd-links { color: var(--muted); }
+  .kpi-evd-links a { color: var(--accent); text-decoration: none; }
+  .kpi-evd-links a:hover { text-decoration: underline; }
+  .kpi-total { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; margin-top: 12px; padding: 12px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; font-size: 13px; }
+  .kpi-total b { font-size: 22px; font-family: var(--font-display); color: var(--accent); }
+  .kpi-month { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .kpi-month-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); }
+  .kpi-task { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--border2); font-size: 13px; }
+  .kpi-task:last-child { border-bottom: none; }
+  .kpi-task.is-done .kpi-task-title { color: var(--muted); text-decoration: line-through; }
+  .kpi-task-title { flex: 1; }
+  .kpi-task-proj { width: 150px; flex-shrink: 0; }
+  .kpi-task-sel { width: 220px; flex-shrink: 0; background: var(--bg2); border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 5px 7px; font-size: 12px; }
+  .kpi-task-evd { flex: 1; min-width: 160px; background: var(--bg2); border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 5px 9px; font-size: 12px; font-family: var(--font-mono, monospace); }
+  .kpi-task-evd::placeholder { color: var(--muted); font-family: inherit; }
+  .kpi-evd-file { display: inline-block; font-family: var(--font-mono, monospace); font-size: 11.5px; color: var(--text); background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px; padding: 1px 7px; margin: 2px 0; }
+  .kpi-evd-file.missing { color: var(--muted); border-style: dashed; }
+  .kpi-cell { min-width: 0; }
+  .kpi-evd { overflow-wrap: anywhere; margin-bottom: 8px; }
+  .kpi-evd-path { display: block; white-space: pre-wrap; font-size: 11px; user-select: text; margin: 4px 0; }
+  .kpi-evd-links { display: block; }
+  .kpi-task-evidence { flex: 1; min-width: 200px; display: grid; gap: 5px; }
+  .kpi-task-evidence label { display: grid; gap: 3px; color: var(--muted); font-size: 11px; }
+  .kpi-task-evidence input { width: 100%; min-width: 0; box-sizing: border-box; }
+  @media (max-width: 900px) { .kpi-task { flex-wrap: wrap; } .kpi-task-evidence { flex-basis: 100%; } .kpi-head, .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi-name, .kpi-row > .kpi-evd { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo">N</div>
+        <div>
+          <h1>NexaBir Productivity</h1>
+          <small>You update · reviews at day end</small>
+        </div>
+      </div>
+      <nav id="nav">
+        <button data-view="dashboard" class="active"><span class="dot">📊</span> Dashboard</button>
+        <button data-view="tasks"><span class="dot">✅</span> Tasks</button>
+        <button data-view="board"><span class="dot">📋</span> Board</button>
+        <button data-view="roadmap"><span class="dot">🗺</span> Roadmap</button>
+        <button data-view="focus"><span class="dot">🎯</span> Focus &amp; Plan</button>
+        <button data-view="links"><span class="dot">🔗</span> Links</button>
+        <button data-view="notes"><span class="dot">📝</span> Notes</button>
+        <button data-view="kpi"><span class="dot">📈</span> KPI</button>
+      </nav>
+      <div class="hdr-controls">
+        <div class="search-wrap">
+          <span class="icon">🔍</span>
+          <input id="globalSearch" type="text" placeholder="Search everything…" autocomplete="off">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div class="bell-wrap">
+          <button class="bell" id="bellBtn">🔔<span class="count" id="bellCount" style="display:none">0</span></button>
+          <div class="bell-drop" id="bellDrop"></div>
+        </div>
+        <div id="mePicker">
+          <span class="small muted">👤</span>
+          <select id="meSelect" title="Who are you viewing as?"></select>
+        </div>
+        <button class="bell" id="changePwBtn" title="Change password" style="display:none">🔑</button>
+        <button class="bell" id="logoutBtn" title="Sign out" style="display:none">🚪</button>
+        <button class="bell" id="themeBtn" title="Toggle theme">🌙</button>
+        <button class="btn small" id="saveGithubBtn" title="Publish current workspace to GitHub Pages">💾 Save to GitHub</button>
+        <div class="menu-wrap">
+          <button class="bell" id="menuBtn">⚙️</button>
+          <div class="menu-drop" id="menuDrop"></div>
+        </div>
+      </div>
+      <div class="sync-status" id="syncStatus"><span class="pill"></span><span id="syncText">local</span></div>
+    </div>
+  </header>
+
+  <!-- ================= LOGIN ================= -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-logo">N</div>
+      <h2>Sign in</h2>
+      <p class="login-sub">NexaBir Productivity — personal workspace</p>
+      <div id="loginError" class="login-error" style="display:none"></div>
+      <div class="field">
+        <label>Email</label>
+        <input id="loginEmail" type="email" autocomplete="username" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="loginPw" type="password" autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button class="btn" id="loginBtn" style="width:100%; justify-content:center">Sign in</button>
+    </div>
+  </div>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="view active" id="view-dashboard">
+    <div class="page-title">
+      <div>
+        <h2>Dashboard</h2>
+        <p>Live task overview + opencode activity.</p>
+      </div>
+      <button class="btn ghost" id="refreshBtn">↻ Refresh</button>
+    </div>
+    <div class="kpis" id="taskKpis"></div>
+    <div class="charts" id="taskCharts"></div>
+    <div class="card chart-card" id="taskOverdue" style="margin-bottom:16px"></div>
+
+    <div class="dash-sep"><h3>opencode activity</h3></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="alerts" id="alerts"></div>
+    <div class="seg" id="dashFocus" style="margin-bottom:16px"></div>
+    <div class="card" id="dashMits" style="margin-bottom:16px"></div>
+    <div class="charts" id="charts"></div>
+    <div class="two-col">
+      <div class="card chart-card">
+        <h3>Recent sessions <span class="tag">last 30</span></h3>
+        <div id="recentSessions"></div>
+      </div>
+      <div class="card chart-card">
+        <h3>Work log <span class="tag">auto-logged by opencode · 6 PM daily</span></h3>
+        <div id="worklog"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TASKS ================= -->
+  <section class="view" id="view-tasks">
+    <div class="page-title">
+      <div>
+        <h2>Task List</h2>
+        <p>Edit, update and re-open tasks yourself. opencode verifies or rewrites at day end and leaves its opinion.</p>
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="reqListBtn">🗂 Requests</button>
+        <button class="btn" id="reqTaskBtn">+ New task</button>
+      </div>
+    </div>
+    <div class="notice">
+      <b>You're in control:</b> mark done, re-open, edit and add updates to any task instantly — no waiting.
+      Use <b>Ask opencode</b> on a task (or the <b>Requests</b> list) to have opencode verify/rewrite it and give its
+      best opinion at the end of the day.
+    </div>
+    <div class="task-filters" id="taskFilters"></div>
+    <div id="opencodeReview"></div>
+    <div id="taskList"></div>
+  </section>
+
+  <!-- ================= BOARD (KANBAN) ================= -->
+  <section class="view" id="view-board">
+    <div class="page-title">
+      <div>
+        <h2>Board</h2>
+        <p>Drag cards across columns to change status. Filter by sprint.</p>
+      </div>
+      <button class="btn" id="reqTaskBtn2">+ New task</button>
+    </div>
+    <div id="boardSprintBar"></div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- ================= ROADMAP ================= -->
+  <section class="view" id="view-roadmap">
+    <div class="page-title">
+      <div>
+        <h2>Roadmap</h2>
+        <p>Timeline by sprint and due date. Color-coded by status.</p>
+      </div>
+    </div>
+    <div id="roadmap"></div>
+  </section>
+
+  <!-- ================= FOCUS & PLAN ================= -->
+  <section class="view" id="view-focus">
+    <div class="page-title">
+      <div>
+        <h2>Focus &amp; Plan</h2>
+        <p>Pomodoro timer, daily priorities (MITs), habits &amp; streaks, and meetings.</p>
+      </div>
+      <button class="btn ghost" id="weeklyReviewBtn">📄 Weekly review</button>
+    </div>
+    <div class="focus-grid">
+      <div class="card pomo">
+        <h3>Pomodoro Timer</h3>
+        <div class="mode-tabs">
+          <button class="chip active" id="modeWork" data-mode="work">🍅 Focus</button>
+          <button class="chip" id="modeBreak" data-mode="break">☕ Break</button>
+        </div>
+        <div class="ring" id="pomoRing"><div><span class="timer" id="pomoTime">25:00</span><small id="pomoMode">Focus</small></div></div>
+        <div class="controls">
+          <button class="btn" id="pomoStart">▶ Start</button>
+          <button class="btn ghost" id="pomoReset">↺ Reset</button>
+        </div>
+        <div class="focus-label">
+          <input id="focusLabel" type="text" placeholder="What are you focusing on? (optional)">
+        </div>
+        <div class="row" style="margin-top:12px;justify-content:center;gap:12px">
+          <label class="small muted">Focus <input id="focusWorkMin" type="number" min="1" max="120" value="25" style="width:48px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:7px;padding:4px 6px"> min</label>
+          <label class="small muted">Break <input id="focusBreakMin" type="number" min="1" max="60" value="5" style="width:48px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:7px;padding:4px 6px"> min</label>
+        </div>
+        <div class="small muted" id="focusToday" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px">
+          <h3 style="margin:0">Today's Top 3 (MITs)</h3>
+          <button class="btn ghost small" id="mitSuggest">✨ Suggest from tasks</button>
+        </div>
+        <div class="small muted" style="margin-bottom:12px">Most important things to finish today.</div>
+        <div id="mitList"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px">
+          <h3 style="margin:0">Habits &amp; Streaks</h3>
+          <button class="btn ghost small" id="habitAdd">+ New habit</button>
+        </div>
+        <div class="small muted" style="margin-bottom:12px">Build streaks. Consistency &gt; intensity.</div>
+        <div id="habitList"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px">
+          <h3 style="margin:0">Meetings</h3>
+          <button class="btn ghost small" id="meetingAdd">+ New meeting</button>
+        </div>
+        <div class="small muted" style="margin-bottom:12px">Schedule, add to Google Calendar, or turn into a task request.</div>
+        <div id="meetingList"></div>
+      </div>
+    </div>
+    <div class="card" id="reviewCard" style="display:none;margin-top:16px">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Weekly Review</h3>
+        <div class="row">
+          <button class="btn ghost small" id="reviewCopy">📋 Copy</button>
+          <button class="btn ghost small" id="reviewDownload">⬇ Download</button>
+          <button class="btn small" id="reviewEmail">✉ Email to me</button>
+        </div>
+      </div>
+      <div class="review-out" id="reviewOut" style="margin-top:10px"></div>
+    </div>
+  </section>
+
+  <!-- ================= KPI ================= -->
+  <section class="view" id="view-kpi">
+    <div class="page-title">
+      <div>
+        <h2>Monthly KPI Tracker</h2>
+        <p>Each task is one work output. Map it to a KPI folder and attach its evidence file — Actual (O) counts every work item (created · updated · planned) with evidence.</p>
+      </div>
+      <div class="row">
+        <select id="kpiMonth" title="Select month"></select>
+        <button class="btn ghost" id="kpiCopy">📋 Copy for Sheets</button>
+      </div>
+    </div>
+    <div id="kpiTable"></div>
+    <p class="muted small">Online evidence opens in a new tab. Local files show their full location: copy the path into File Explorer to find and upload the file. This website cannot open files on your PC. After uploading, paste the share link in “Online evidence URL” below.</p>
+    <div class="dash-sep"><h3>Month-wise tasks</h3></div>
+    <div id="kpiMonths"></div>
+  </section>
+
+  <!-- ================= LINKS ================= -->
+  <section class="view" id="view-links">
+    <div class="page-title">
+      <div>
+        <h2>Working Links</h2>
+        <p>Dashboards, Google Docs &amp; Sheets, and other useful links — fully managed by you.</p>
+      </div>
+      <button class="btn" id="addLinkBtn">+ Add link</button>
+    </div>
+    <div id="linkList"></div>
+  </section>
+
+  <!-- ================= NOTES ================= -->
+  <section class="view" id="view-notes">
+    <div class="page-title">
+      <div>
+        <h2>Notes &amp; Workspace</h2>
+        <p>Three workspaces: document writer, spreadsheet, and design canvas.</p>
+      </div>
+      <button class="btn ghost" id="newNoteBtn">+ New note</button>
+    </div>
+    <div class="note-subtabs" id="noteSubtabs">
+      <button class="chip active" data-type="doc">📄 Document</button>
+      <button class="chip" data-type="sheet">📊 Spreadsheet</button>
+      <button class="chip" data-type="design">🎨 Design</button>
+    </div>
+    <div class="note-sidebar">
+      <div class="note-list" id="noteList"></div>
+      <div class="note-main" id="noteMain"></div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal" id="modal"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="data/analytics.js"></script>
+<script>
+"use strict";
+
+/* ============================================================
+   NexaBir Productivity — single-file PWA
+   Data model (localStorage key nexabirProd.v1):
+   { tasks[], requests[], links[], notes[], workLog[], analytics{}, seedNoteIds{} }
+   Demo data is synthetic. An optional JSON snapshot at
+   data/opencode.json can be merged in to seed tasks / worklog / analytics.
+============================================================ */
+
+const LS_KEY = "nexabirProd.v1";
+const OPENCODE_URL = "data/opencode.json";
+const REQUESTS_API = "/api/requests";
+const READ_ONLY = window.__READ_ONLY__ === true;
+
+/* Optional team backend (Cloudflare Workers + D1). When API_BASE is set, the Worker is
+   the source of truth and localStorage becomes an offline cache. Left empty
+   ("") so this demo runs in single-user local mode. */
+const API_BASE = window.__API_BASE__ || "";
+const API_ENABLED = API_BASE !== "" && !READ_ONLY;
+const AUTH_KEY = "nexabirProd.auth";
+let apiVersion = null;   // optimistic-lock version of the last server state we saw
+let lockedMe = null;     // authenticated user (team mode) — locks the identity picker
+let sessionToken = null; // signed session token from /api/login
+
+function apiHeaders() {
+  const h = { "Content-Type": "application/json" };
+  if (sessionToken) h["Authorization"] = "Bearer " + sessionToken;
+  return h;
+}
+
+/* ---------- Embedded opencode snapshot (fallback for file://) ---------- */
+const EMBEDDED_ANALYTICS = window.__ANALYTICS__ || null;
+
+const SEED_TASKS = [
+  { id: "t1", title: "Build the NexaBir Productivity app", desc: "Dashboard analytics, task board, links and note workspace.", status: "progress", source: "manual", priority: "high", due: "2026-09-07", project: "Productivity", tags: ["app", "build"], createdAt: "2026-09-06T08:30:00Z" },
+  { id: "t2", title: "Review weekly reading list", desc: "Shortlist three articles and take notes in the Notes workspace.", status: "open", source: "manual", priority: "high", due: "2026-09-06", project: "Learning", createdAt: "2026-09-06T08:00:00Z" },
+  { id: "t3", title: "Plan the weekend home workout block", desc: "Consolidate focus sessions and log the hours afterwards.", status: "open", source: "manual", priority: "medium", due: "2026-09-08", project: "Health", tags: ["routine", "focus"], createdAt: "2026-09-05T16:00:00Z" },
+  { id: "t4", title: "Set up local dev tooling shortcuts", desc: "One-click scripts for the everyday workspace.", status: "done", source: "manual", priority: "medium", due: null, project: "Tooling", createdAt: "2026-08-18T08:00:00Z" },
+  { id: "t5", title: "Automate the monthly personal budget sheet", desc: "Auto-categorise expenses and chart the trend.", status: "done", source: "manual", priority: "high", due: null, project: "Finance", tags: ["finance", "automation"], createdAt: "2026-08-26T09:00:00Z" }
+];
+
+const SEED_WORKLOG = [
+  { id: "w2", date: "2026-09-06", summary: "Building the NexaBir Productivity app — dashboard analytics, task board, links & note workspace.", hours: 6, project: "Productivity" },
+  { id: "w1", date: "2026-09-05", summary: "Reviewed the personal budget automation script and cleaned up the expense categories.", hours: 4.5, project: "Finance" }
+];
+
+const SEED_NOTES = [
+  { id: "n1", type: "doc", title: "Welcome 👋", content: "<h1>Welcome to your Productivity App</h1><p>This is your <b>Document</b> workspace — write, format and organize like Google Docs.</p><ul><li>Use the toolbar to format text.</li><li>Everything auto-saves to your browser.</li><li>Create more notes with <b>+ New note</b>.</li></ul><blockquote>Tip: switch to the Spreadsheet or Design workspace from the tabs above.</blockquote>", updatedAt: "2026-09-06T09:00:00Z" }
+];
+
+const SEED_LINKS = [
+  { id: "lk-portfolio", name: "Portfolio site (demo)", url: "https://example.com/portfolio", category: "dashboard" },
+  { id: "lk-repo-gh", name: "Project tracker (GitHub)", url: "https://github.com/abir2022/project-tracker", category: "dashboard" },
+  { id: "lk-notes-folder", name: "Personal notes — folder", url: "https://example.com/notes", category: "other" },
+  { id: "lk-habit-sheet", name: "Habit tracker", url: "https://example.com/habits", category: "sheet" },
+  { id: "lk-budget-sheet", name: "Monthly budget sheet", url: "https://example.com/budget", category: "sheet" },
+  { id: "lk-kpi-personal", name: "Personal goals tracker (Sep 2026)", url: "https://example.com/goals", category: "sheet" },
+  { id: "lk-kpi-automation", name: "Automation ideas tracker", url: "https://example.com/automation", category: "sheet" },
+  { id: "lk-reading-list", name: "Reading list", url: "https://example.com/reading", category: "sheet" },
+  { id: "lk-workout-log", name: "Workout log", url: "https://example.com/fitness", category: "sheet" },
+  { id: "lk-about-me", name: "About me", url: "https://example.com/about", category: "doc" },
+  { id: "lk-sql-notes", name: "SQL practice notes", url: "https://example.com/sql-practice", category: "doc" },
+  { id: "lk-learning-plan", name: "Learning plan — 2026", url: "https://example.com/learning-plan", category: "sheet" },
+  { id: "lk-5yr-plan", name: "Five-year personal plan", url: "https://example.com/five-year-plan", category: "sheet" },
+  { id: "lk-expense-bva", name: "Expenses: budget vs actual", url: "https://example.com/expenses", category: "sheet" },
+  { id: "lk-skills-gap", name: "Skills gap analysis", url: "https://example.com/skills-gap", category: "sheet" },
+  { id: "lk-side-roi", name: "Side-project ROI review", url: "https://example.com/side-projects", category: "sheet" },
+  { id: "lk-travel-plan", name: "Travel planner 2026-27", url: "https://example.com/travel", category: "sheet" },
+  { id: "lk-books-read", name: "Books finished", url: "https://example.com/books", category: "sheet" },
+  { id: "lk-savings", name: "Savings dashboard", url: "https://example.com/savings", category: "sheet" },
+  { id: "lk-home-upgrades", name: "Home upgrades tracker", url: "https://example.com/home", category: "sheet" },
+  { id: "lk-side-hustle", name: "Side projects overview", url: "https://example.com/side-hustle", category: "dashboard" },
+  { id: "lk-resume", name: "Resume / CV dashboard", url: "https://example.com/resume", category: "dashboard" },
+  { id: "lk-pptx-goals", name: "Annual goals review", url: "https://example.com/annual-review", category: "other" },
+  { id: "lk-pptx-insights", name: "Personal insights deck", url: "https://example.com/insights", category: "other" },
+  { id: "lk-pdf-income", name: "Projected income statement", url: "https://example.com/income", category: "doc" },
+  { id: "lk-pdf-routine", name: "Daily routine playbook", url: "https://example.com/routine", category: "doc" }
+];
+
+/* ---------- State ---------- */
+function defaults() {
+  return {
+    tasks: JSON.parse(JSON.stringify(SEED_TASKS)),
+    requests: [],
+    links: JSON.parse(JSON.stringify(SEED_LINKS)),
+    removedLinks: [],
+    notes: JSON.parse(JSON.stringify(SEED_NOTES)),
+    workLog: JSON.parse(JSON.stringify(SEED_WORKLOG)),
+    analytics: EMBEDDED_ANALYTICS || null,
+    focusLog: [],
+    mits: {},
+    habits: [],
+    meetings: [],
+    settings: { focusWork: 25, focusBreak: 5, notifyBrowser: true, backupAuto: true, autoPushGithub: true, theme: "dark" },
+    kpi: { targets: {} },
+    opencodeReview: null,
+    seedIds: { tasks: SEED_TASKS.map(t => t.id), notes: SEED_NOTES.map(n => n.id), worklog: SEED_WORKLOG.map(w => w.id) }
+  };
+}
+let state = load();
+function normalize(s) {
+  const d = defaults();
+  if (!s || typeof s !== "object") s = {};
+  for (const k of ["tasks","requests","links","removedLinks","notes","workLog","focusLog","habits","meetings"]) {
+    if (!Array.isArray(s[k])) s[k] = d[k];
+  }
+  if (!s.mits || typeof s.mits !== "object" || Array.isArray(s.mits)) s.mits = {};
+  if (!s.settings || typeof s.settings !== "object") s.settings = {};
+  s.settings = Object.assign({}, d.settings, s.settings);
+  if (!s.seedIds) s.seedIds = {};
+  if (!s.opencodeReview) s.opencodeReview = null;
+  if (!s.kpi || typeof s.kpi !== "object") s.kpi = { targets: {} };
+  if (!s.kpi.targets || typeof s.kpi.targets !== "object") s.kpi.targets = {};
+  (s.tasks || []).forEach(t => {
+    if (!Array.isArray(t.updates)) t.updates = [];
+    if (!Array.isArray(t.sources)) t.sources = [];
+    if (!Array.isArray(t.tags)) t.tags = [];
+    if (!Array.isArray(t.tagged)) t.tagged = [];
+    if (!Array.isArray(t.comments)) t.comments = [];
+    if (!Array.isArray(t.steps)) t.steps = [];
+    if (!t.type) t.type = "task";
+    if (t.points == null) t.points = null;
+    if (t.estimatedHours == null) t.estimatedHours = null;
+  });
+  return s;
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) { const s = JSON.parse(raw); if (s && s.tasks) return normalize(s); }
+  } catch (e) {}
+  return defaults();
+}
+function save() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+  if (API_ENABLED) schedulePush();
+  else { scheduleAutoPush(); scheduleAutoBackup(); }
+}
+let pushTimer = null;
+function schedulePush() {
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => pushToServer(true), 2000);
+}
+let autoPushTimer = null;
+function scheduleAutoPush() {
+  if (READ_ONLY || state.settings.autoPushGithub === false) return;
+  clearTimeout(autoPushTimer);
+  autoPushTimer = setTimeout(() => saveToGitHub(true), 5000);
+}
+let autoBackupTimer = null;
+function scheduleAutoBackup() {
+  if (READ_ONLY || state.settings.backupAuto === false) return;
+  clearTimeout(autoBackupTimer);
+  autoBackupTimer = setTimeout(() => backupNow(true), 10000);
+}
+
+/* ---------- Helpers ---------- */
+const $ = (sel, el=document) => el.querySelector(sel);
+const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+const uid = () => "id" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtNum = n => {
+  if (n == null || isNaN(n)) return "0";
+  if (Math.abs(n) >= 1e9) return (n/1e9).toFixed(2) + "B";
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(2) + "M";
+  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(1) + "K";
+  return String(Math.round(n * 100) / 100);
+};
+const fmtDate = ts => ts ? new Date(ts).toLocaleDateString(undefined, { month:"short", day:"numeric" }) : "—";
+const fmtDateTime = ts => ts ? new Date(ts).toLocaleString(undefined, { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" }) : "—";
+const daysBetween = (a, b) => Math.max(1, Math.ceil((b - a) / 86400000));
+const cssVar = n => getComputedStyle(document.body).getPropertyValue(n).trim();
+
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+/* ---------- Navigation ---------- */
+$("#nav").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-view]");
+  if (!btn) return;
+  showView(btn.dataset.view);
+});
+function showView(name) {
+  $$("#nav button").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+  $$(".view").forEach(v => v.classList.remove("active"));
+  $("#view-" + name).classList.add("active");
+  if (name === "notes") renderNotes();
+  if (name === "focus") renderFocus();
+  if (name === "board") renderBoard();
+  if (name === "roadmap") renderRoadmap();
+  if (name === "dashboard") renderDashboard();
+  if (name === "kpi") renderKpi();
+}
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+function renderDashboard() {
+  renderTaskDashboard();
+  renderAnalyticsDashboard();
+}
+function renderTaskDashboard() {
+  const tasks = state.tasks;
+  const st = { open: 0, progress: 0, review: 0, done: 0 };
+  tasks.forEach(t => { if (st[t.status] != null) st[t.status]++; });
+  const total = tasks.length;
+  const completion = total ? Math.round(st.done / total * 100) : 0;
+  const today = todayStr();
+  const overdue = tasks.filter(t => t.status !== "done" && t.due && t.due < today);
+  const totalSteps = tasks.reduce((n, t) => n + stepsOf(t).length, 0);
+  const doneSteps = tasks.reduce((n, t) => n + stepsOf(t).filter(s => s.done).length, 0);
+
+  const kpis = [
+    { label: "Total tasks", value: total, sub: "all statuses" },
+    { label: "Done", value: st.done, sub: "completed" },
+    { label: "In progress", value: st.progress, sub: "started" },
+    { label: "Open", value: st.open, sub: "not started" },
+    { label: "In review", value: st.review, sub: "pending sign-off" },
+    { label: "Overdue", value: overdue.length, sub: overdue.length ? "needs attention" : "on track" },
+    { label: "Completion", value: completion + "%", sub: st.done + "/" + total + " tasks", accent: true },
+    { label: "Steps", value: doneSteps + "/" + totalSteps, sub: "done / total" }
+  ];
+  $("#taskKpis").innerHTML = kpis.map(k =>
+    `<div class="kpi ${k.accent ? "accent" : ""}"><div class="k-label">${k.label}</div><div class="k-value">${k.value}</div><div class="k-sub">${k.sub}</div></div>`
+  ).join("");
+
+  const byProject = {};
+  tasks.forEach(t => { const p = t.project || "No project"; byProject[p] = (byProject[p] || 0) + 1; });
+  const byAssignee = {};
+  tasks.forEach(t => { const a = t.assignee ? (TEAM_BY_ID[t.assignee] ? TEAM_BY_ID[t.assignee].name : t.assignee) : "Unassigned"; byAssignee[a] = (byAssignee[a] || 0) + 1; });
+  const byPriority = { high: 0, medium: 0, low: 0 };
+  tasks.forEach(t => { if (byPriority[t.priority] != null) byPriority[t.priority]++; });
+
+  $("#taskCharts").innerHTML = `
+    <div class="card chart-card"><h3>Tasks by status</h3><canvas id="tc-status" height="180"></canvas></div>
+    <div class="card chart-card"><h3>Tasks by project</h3><canvas id="tc-project" height="180"></canvas></div>
+    <div class="card chart-card"><h3>Tasks by assignee</h3><canvas id="tc-assignee" height="180"></canvas></div>
+    <div class="card chart-card"><h3>Tasks by priority</h3><canvas id="tc-priority" height="180"></canvas></div>
+  `;
+  drawBars($("#tc-status"), [st.open, st.progress, st.review, st.done], ["Open", "Progress", "Review", "Done"], "#2fbf8f");
+  drawHBar($("#tc-project"), Object.entries(byProject).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: k, value: v })), ["#2fbf8f", "#35b8a6", "#e0b45a", "#34d399", "#fbbf24", "#8ba09a", "#4fd3c1", "#f87171"]);
+  drawHBar($("#tc-assignee"), Object.entries(byAssignee).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: k, value: v })), ["#2fbf8f", "#35b8a6", "#e0b45a", "#8ba09a", "#34d399", "#fbbf24", "#f87171", "#4fd3c1"]);
+  drawBars($("#tc-priority"), [byPriority.high, byPriority.medium, byPriority.low], ["High", "Medium", "Low"], "#e0b45a");
+
+  $("#taskOverdue").innerHTML = overdue.length
+    ? `<h3>Overdue tasks <span class="tag">${overdue.length}</span></h3><div class="overdue-list">${overdue.map(t => `<div class="overdue-item"><span class="od-title">${esc(t.title)}</span><span class="od-meta">${esc(t.due)} · ${STATUS[t.status] || t.status}${t.assignee && TEAM_BY_ID[t.assignee] ? " · " + esc(TEAM_BY_ID[t.assignee].name) : ""}</span></div>`).join("")}</div>`
+    : `<h3>Overdue tasks <span class="tag">0</span></h3><div class="empty small">Nothing overdue.</div>`;
+}
+function renderAnalyticsDashboard() {
+  const a = state.analytics;
+  if (!a || !a.totals) { $("#kpis").innerHTML = '<div class="empty"><div class="big">📊</div>No analytics yet.<br>Run "Refresh from opencode" or import opencode.json.</div>'; $("#charts").innerHTML = ""; $("#recentSessions").innerHTML = ""; return; }
+  const t = a.totals;
+  const daysActive = a.sessionsPerDay ? a.sessionsPerDay.length : 0;
+  const todoDone = a.todoStatus && a.todoStatus.completed ? a.todoStatus.completed : 0;
+  const totalTodos = a.todos || 0;
+
+  const kpis = [
+    { label: "Sessions", value: fmtNum(t.sessions), sub: `since ${fmtDate(a.firstSession)}` },
+    { label: "Messages", value: fmtNum(t.messages), sub: `${fmtNum(t.parts)} parts` },
+    { label: "Total tokens", value: fmtNum(t.tokensInput + t.tokensOutput + t.tokensReasoning), sub: `${fmtNum(t.tokensInput)} in / ${fmtNum(t.tokensOutput)} out`, accent: true },
+    { label: "Est. cost", value: "$" + (t.cost || 0).toFixed(2), sub: "demo-model-a primary" },
+    { label: "Todos", value: todoDone + "/" + totalTodos, sub: "completed / total" },
+    { label: "Active days", value: daysActive, sub: `~${(a.avgSessionMinutes/60).toFixed(1)}h avg session` }
+  ];
+  $("#kpis").innerHTML = kpis.map(k =>
+    `<div class="kpi ${k.accent ? "accent" : ""}"><div class="k-label">${k.label}</div><div class="k-value">${k.value}</div><div class="k-sub">${k.sub}</div></div>`
+  ).join("");
+
+  $("#charts").innerHTML = `
+    <div class="card chart-card"><h3>Sessions per day</h3><canvas id="c-spd" height="200"></canvas></div>
+    <div class="card chart-card"><h3>Activity by hour <span class="tag">of day</span></h3><canvas id="c-hour" height="200"></canvas></div>
+    <div class="card chart-card"><h3>Activity by day of week</h3><canvas id="c-dow" height="200"></canvas></div>
+    <div class="card chart-card"><h3>Model usage <span class="tag">by sessions</span></h3><canvas id="c-model" height="200"></canvas></div>
+    <div class="card chart-card"><h3>Agents used</h3><canvas id="c-agent" height="200"></canvas></div>
+    <div class="card chart-card"><h3>Top projects <span class="tag">by sessions</span></h3><canvas id="c-dir" height="200"></canvas></div>
+  `;
+
+  const spd = a.sessionsPerDay || [];
+  drawLine($("#c-spd"), spd.map(x => x[1]), spd.map(x => fmtDate(new Date(x[0]).getTime())), "#2fbf8f");
+  drawBars($("#c-hour"), (a.hourOfDay||[]).map(h => h.count), (a.hourOfDay||[]).map(h => h.hour + "h"), "#35b8a6");
+  drawBars($("#c-dow"), (a.dayOfWeek||[]).map(d => d.count), (a.dayOfWeek||[]).map(d => d.day), "#e0b45a");
+  drawHBar($("#c-model"), (a.models||[]).map(m => ({ label: m[0], value: m[1].count })), ["#2fbf8f","#35b8a6","#e0b45a","#34d399","#fbbf24","#f87171"]);
+  drawHBar($("#c-agent"), (a.agents||[]).map(m => ({ label: m[0], value: m[1] })), ["#34d399","#2fbf8f","#e0b45a","#35b8a6"]);
+  drawHBar($("#c-dir"), (a.topDirectories||[]).slice(0,8).map(m => ({ label: m[0], value: m[1] })), ["#fbbf24","#34d399","#2fbf8f","#35b8a6","#e0b45a","#f87171","#8ba09a","#4fd3c1"]);
+
+  // recent sessions
+  const rs = (a.recentSessions || []).slice().reverse();
+  $("#recentSessions").innerHTML = rs.length ? `
+    <table><thead><tr><th>Session</th><th>Agent</th><th>Cost</th><th>When</th></tr></thead><tbody>
+    ${rs.map(s => `<tr><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(s.title)}">${esc(s.title)}</td><td>${esc(s.agent||"—")}</td><td>$${(s.cost||0).toFixed(2)}</td><td>${fmtDate(s.created)}</td></tr>`).join("")}
+    </tbody></table>` : '<div class="empty small">No sessions</div>';
+}
+
+function renderWorklog() {
+  const wl = (state.workLog || []).slice().reverse();
+  $("#worklog").innerHTML = wl.length ? wl.map(w => `
+    <div class="task-item" style="margin-bottom:8px;padding:12px 14px">
+      <div class="task-body">
+        <div class="row" style="justify-content:space-between"><span class="task-title" style="font-size:13px">${esc(w.project || "General")}</span><span class="small muted">${w.date}</span></div>
+        <div class="task-desc">${esc(w.summary)}</div>
+        <div class="task-meta"><span class="badge auto">auto · ${w.hours || 0}h</span></div>
+      </div>
+    </div>`).join("") : '<div class="empty small">No auto-logged work yet.</div>';
+}
+
+/* ============================================================
+   Chart primitives (canvas, no deps)
+============================================================ */
+function setupCanvas(cv) {
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth || cv.parentElement.clientWidth || 320;
+  const h = parseInt(cv.getAttribute("height") || "200", 10);
+  cv.width = w * dpr; cv.height = h * dpr;
+  const ctx = cv.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+  return { ctx, w, h };
+}
+function drawBars(cv, values, labels, color) {
+  const { ctx, w, h } = setupCanvas(cv);
+  const padL = 30, padB = 22, padT = 10, padR = 6;
+  const max = Math.max(1, ...values);
+  const bw = (w - padL - padR) / values.length;
+  ctx.font = "10px Segoe UI";
+  for (let i = 0; i < values.length; i++) {
+    const x = padL + i * bw + bw * 0.16;
+    const bh = ((h - padT - padB) * values[i]) / max;
+    const y = h - padB - bh;
+    ctx.fillStyle = color; ctx.globalAlpha = 0.92;
+    ctx.beginPath(); ctx.roundRect(x, y, bw * 0.68, bh, 3); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = cssVar("--chart-label"); ctx.textAlign = "center";
+    if (labels.length <= 30 || i % Math.ceil(labels.length/30) === 0) {
+      ctx.fillText(String(labels[i]), padL + i * bw + bw/2, h - padB + 14);
+    }
+  }
+  ctx.strokeStyle = cssVar("--chart-grid"); ctx.beginPath(); ctx.moveTo(padL, h - padB); ctx.lineTo(w - padR, h - padB); ctx.stroke();
+}
+function drawLine(cv, values, labels, color) {
+  const { ctx, w, h } = setupCanvas(cv);
+  const padL = 30, padB = 22, padT = 12, padR = 10;
+  const max = Math.max(1, ...values);
+  const px = i => padL + (i * (w - padL - padR)) / Math.max(1, values.length - 1);
+  const py = v => h - padB - ((h - padT - padB) * v) / max;
+  ctx.strokeStyle = cssVar("--chart-grid"); ctx.beginPath(); ctx.moveTo(padL, h - padB); ctx.lineTo(w - padR, h - padB); ctx.stroke();
+  ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.lineJoin = "round";
+  ctx.beginPath();
+  values.forEach((v, i) => i ? ctx.lineTo(px(i), py(v)) : ctx.moveTo(px(i), py(v)));
+  ctx.stroke();
+  ctx.fillStyle = color;
+  values.forEach((v, i) => { ctx.beginPath(); ctx.arc(px(i), py(v), 3.2, 0, 7); ctx.fill(); });
+  ctx.fillStyle = cssVar("--chart-label"); ctx.font = "10px Segoe UI"; ctx.textAlign = "center";
+  const step = Math.max(1, Math.ceil(labels.length / 8));
+  labels.forEach((lb, i) => { if (i % step === 0) ctx.fillText(String(lb), px(i), h - padB + 14); });
+}
+function drawHBar(cv, items, colors) {
+  const { ctx, w, h } = setupCanvas(cv);
+  const max = Math.max(1, ...items.map(i => i.value));
+  const rowH = h / items.length;
+  const maxW = w - 40 - 120;
+  items.forEach((it, i) => {
+    const y = i * rowH + rowH * 0.2;
+    const barH = rowH * 0.6;
+    ctx.fillStyle = cssVar("--chart-label"); ctx.font = "11px Segoe UI"; ctx.textAlign = "right";
+    const label = it.label.length > 16 ? it.label.slice(0,16) + "…" : it.label;
+    ctx.fillText(label, w - 8, y + barH * 0.75);
+    ctx.fillStyle = colors[i % colors.length];
+    const bw = Math.max(3, (maxW * it.value) / max);
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath(); ctx.roundRect(10, y, bw, barH, 4); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = cssVar("--chart-value"); ctx.textAlign = "left"; ctx.font = "10.5px Segoe UI";
+    ctx.fillText(String(it.value), 14 + bw, y + barH * 0.75);
+  });
+}
+
+/* ============================================================
+   TASKS
+============================================================ */
+const STATUS = { open: "Open", progress: "In progress", review: "In review", done: "Done" };
+const STATUS_ORDER = { progress: 0, open: 1, review: 2, done: 3 };
+const SRC = { opencode: "opencode", auto: "auto-approved", manual: "manual" };
+const ISSUE_TYPES = {
+  task:  { icon: "🔹", label: "Task" },
+  story: { icon: "📘", label: "Story" },
+  epic:  { icon: "🔷", label: "Epic" },
+  bug:   { icon: "🐞", label: "Bug" },
+};
+const TEAM = [
+  { id: "abir",  name: "Abir",    role: "admin",  color: "#2fbf8f" },
+  { id: "peer",  name: "Sam",     role: "member", color: "#35b8a6" },
+  { id: "mgr1",  name: "Riley",   role: "member", color: "#e0b45a" },
+  { id: "mgr2",  name: "Jordan",  role: "member", color: "#8ba09a" },
+];
+const TEAM_BY_ID = Object.fromEntries(TEAM.map(m => [m.id, m]));
+let taskFilter = "all";
+let taskGroup = false;
+let tagFilter = null;
+
+function allTags() {
+  const set = new Set();
+  state.tasks.forEach(t => (t.tags || []).forEach(g => set.add(g)));
+  return Array.from(set).sort();
+}
+
+function renderTasks() {
+  const filters = [["all","All"], ...Object.entries(STATUS).map(([k, l]) => [k, l])];
+  let html = filters.map(([k, l]) => `<button class="chip ${taskFilter===k?"active":""}" data-f="${k}">${l}</button>`).join("");
+  html += `<button class="chip ${taskGroup?"active":""}" data-grp="1">🗂 Group by project</button>`;
+  html += `<span class="spacer"></span><span class="small muted">${state.tasks.length} tasks</span>`;
+  $("#taskFilters").innerHTML = html;
+
+  const tags = allTags();
+  if (tags.length) {
+    $("#taskFilters").insertAdjacentHTML("beforeend", `<div style="width:100%"></div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px">${tags.map(g=>`<button class="chip ${tagFilter===g?"active":""}" data-tag="${esc(g)}">#${esc(g)}</button>`).join("")}${tagFilter?`<button class="chip" data-tag="__none">✕ clear</button>`:""}</div>`);
+  }
+
+  $$("#taskFilters [data-f]").forEach(c => c.onclick = () => { taskFilter = c.dataset.f; renderTasks(); });
+  const grpBtn = $("#taskFilters [data-grp]"); if (grpBtn) grpBtn.onclick = () => { taskGroup = !taskGroup; renderTasks(); };
+  $$("#taskFilters [data-tag]").forEach(c => c.onclick = () => { tagFilter = c.dataset.tag === "__none" ? null : c.dataset.tag; renderTasks(); });
+
+  let list = visibleTasks().slice();
+  if (taskFilter !== "all") list = list.filter(t => t.status === taskFilter);
+  if (tagFilter) list = list.filter(t => (t.tags || []).includes(tagFilter));
+  list.sort((a, b) => {
+    const ao = a.order == null ? 1e9 : a.order;
+    const bo = b.order == null ? 1e9 : b.order;
+    if (ao !== bo) return ao - bo;
+    return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+  });
+
+  if (!list.length) { $("#taskList").innerHTML = '<div class="empty"><div class="big">✅</div>No tasks in this view.</div>'; return; }
+
+  const renderItem = t => {
+    const done = t.status === "done";
+    const srcBadge = t.source === "auto" ? `<span class="badge auto">⚡ auto-approved</span>` : t.source === "manual" ? `<span class="badge manual">✍️ you</span>` : `<span class="badge opencode">opencode</span>`;
+    const priBadge = t.priority ? `<span class="badge ${t.priority}">${t.priority}</span>` : "";
+    const tagBadges = (t.tags || []).map(g => `<span class="small muted">#${esc(g)}</span>`).join(" ");
+    const typeInfo = ISSUE_TYPES[t.type] || ISSUE_TYPES.task;
+    const assignee = TEAM_BY_ID[t.assignee];
+    const assigneeChip = assignee ? `<span class="badge" style="background:${assignee.color}22;color:${assignee.color}">👤 ${esc(assignee.name)}</span>` : "";
+    const pointsChip = t.points != null ? `<span class="badge">⚡ ${t.points} pts</span>` : "";
+    const sprintChip = t.sprint ? `<span class="badge">🏁 ${esc(t.sprint)}</span>` : "";
+    const prog = stepProgress(t);
+    const progBar = prog ? progressBar(prog) : "";
+    const commentChip = (t.comments || []).length ? `<span class="small muted">· 💬 ${t.comments.length}</span>` : "";
+    const srcLinks = (t.sources || []).map((s, i) => {
+      const label = esc(s.label || s.url || s.path || "");
+      const link = s.url
+        ? `<a class="src-link" href="${esc(s.url)}" target="_blank" rel="noopener">${label} ↗</a>`
+        : `<span class="src-link path" title="${esc(s.path || s.label || "")}">${label}</span>`;
+      const tools = READ_ONLY ? "" : `<button class="src-del" data-edit-src="${esc(t.id)}" data-src-i="${i}" title="Edit source">✎</button><button class="src-del" data-rem-src="${esc(t.id)}" data-src-i="${i}" title="Remove source">×</button>`;
+      return `<span class="src-wrap">${link}${tools}</span>`;
+    }).join("");
+    const addBtn = READ_ONLY ? "" : `<button class="src-add" data-add-src="${esc(t.id)}" title="Add source">+ source</button>`;
+    const srcBlock = (srcLinks || addBtn) ? `<div class="task-sources">🔗 ${srcLinks}${addBtn}</div>` : "";
+    const ups = (t.updates || []);
+    const upsBlock = ups.length ? `<div class="task-updates">${ups.slice().reverse().map(u => `<div class="upd"><span class="upd-at">${fmtDateTime(u.at)}</span>${esc(u.text)}</div>`).join("")}</div>` : "";
+    const reviewBlock = t.review ? `<div class="task-review"><b>opencode:</b> ${esc(t.review)}</div>` : "";
+    const actions = READ_ONLY ? "" : `
+      <button class="btn ghost small" data-move="${esc(t.id)}" data-dir="-1" title="Move up">↑</button>
+      <button class="btn ghost small" data-move="${esc(t.id)}" data-dir="1" title="Move down">↓</button>
+      <button class="btn ghost small" data-edit="${esc(t.id)}">Edit</button>
+      <button class="btn ghost small" data-step-add="${esc(t.id)}">⊞ Step</button>
+      <button class="btn ghost small" data-update="${esc(t.id)}">+ Update</button>
+      <button class="btn ghost small" data-comment="${esc(t.id)}">💬</button>
+      <button class="btn ghost small" data-ask="${esc(t.id)}">Ask opencode</button>
+      <button class="btn danger small" data-del="${esc(t.id)}" title="Delete task">🗑</button>`;
+    return `
+    <div class="task-item" data-id="${esc(t.id)}">
+      <div class="task-check ${done?"done":""}" data-toggle="${esc(t.id)}" title="${done ? "Re-open task" : "Mark done"}">${done ? "↺" : ""}</div>
+      <div class="task-body">
+        <div class="task-title ${done?"done-t":""}">${typeInfo.icon} ${esc(t.title)}</div>
+        ${t.desc ? `<div class="task-desc">${esc(t.desc)}</div>` : ""}
+        <div class="task-meta">
+          <span class="badge ${t.status}">${STATUS[t.status]||t.status}</span>
+          ${srcBadge} ${priBadge} ${assigneeChip} ${pointsChip} ${sprintChip}
+          ${t.project ? `<span class="small muted">${esc(t.project)}</span>` : ""}
+          ${t.due ? `<span class="small muted">due ${esc(t.due)}</span>` : ""}
+          ${tagBadges}
+          ${commentChip}
+          ${ups.length ? `<span class="small muted">· ${ups.length} update${ups.length>1?"s":""}</span>` : ""}
+        </div>
+        ${progBar}
+        ${stepsBlock(t)}
+        ${reviewBlock}
+        ${upsBlock}
+        ${srcBlock}
+      </div>
+      <div class="task-actions">${actions}</div>
+    </div>`;
+  };
+
+  if (taskGroup) {
+    const groups = {};
+    list.forEach(t => { const p = t.project || "No project"; (groups[p] = groups[p] || []).push(t); });
+    $("#taskList").innerHTML = Object.entries(groups).sort((a,b)=>a[0].localeCompare(b[0])).map(([proj, ts]) => {
+      const done = ts.filter(t => t.status === "done").length;
+      const pct = Math.round(done / ts.length * 100);
+      return `<div class="proj-group">
+        <div class="proj-head"><span class="p-name">${esc(proj)}</span><span class="p-count">${done}/${ts.length} done</span><div class="proj-bar"><span style="width:${pct}%"></span></div></div>
+        ${ts.map(renderItem).join("")}
+      </div>`;
+    }).join("");
+  } else {
+    $("#taskList").innerHTML = list.map(renderItem).join("");
+  }
+
+  $$("#taskList [data-toggle]").forEach(el => el.onclick = () => toggleTaskStatus(el.dataset.toggle));
+  $$("#taskList [data-move]").forEach(el => el.onclick = () => moveTask(el.dataset.move, +el.dataset.dir));
+  $$("#taskList [data-edit]").forEach(el => el.onclick = () => openEditTask(el.dataset.edit));
+  $$("#taskList [data-step-add]").forEach(el => el.onclick = () => openAddStep(el.dataset.stepAdd));
+  $$("#taskList [data-step]").forEach(el => el.onchange = () => toggleStep(el.dataset.step, el.dataset.stepId));
+  $$("#taskList [data-update]").forEach(el => el.onclick = () => openAddUpdate(el.dataset.update));
+  $$("#taskList [data-comment]").forEach(el => el.onclick = () => openComments(el.dataset.comment));
+  $$("#taskList [data-ask]").forEach(el => el.onclick = () => openRequest("change", el.dataset.ask));
+  $$("#taskList [data-del]").forEach(el => el.onclick = () => deleteTask(el.dataset.del));
+  $$("#taskList [data-add-src]").forEach(el => el.onclick = () => openSourceForm(el.dataset.addSrc));
+  $$("#taskList [data-edit-src]").forEach(el => el.onclick = () => openSourceForm(el.dataset.editSrc, +el.dataset.srcI));
+  $$("#taskList [data-rem-src]").forEach(el => el.onclick = () => { removeSource(el.dataset.remSrc, +el.dataset.srcI); });
+  renderOpencodeReview();
+}
+
+function renderOpencodeReview() {
+  const el = $("#opencodeReview");
+  if (!el) return;
+  const r = state.opencodeReview;
+  if (!r) { el.innerHTML = ""; return; }
+  el.innerHTML = `
+    <div class="review-card">
+      <div class="rc-head"><span>💡</span> opencode's day-end review</div>
+      <div class="rc-body">${esc(r.note || (typeof r === "string" ? r : JSON.stringify(r)))}</div>
+      ${r.date ? `<div class="rc-meta">${esc(r.date)}</div>` : ""}
+    </div>`;
+}
+
+/* ---------- Task sources (add/remove, local) ---------- */
+function removeSource(taskId, i) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  t.sources = (t.sources || []).slice();
+  t.sources.splice(i, 1);
+  save(); renderTasks(); toast("Source removed");
+}
+function openSourceForm(taskId, index) {
+  const task = state.tasks.find(x => x.id === taskId);
+  if (!task) return;
+  const editing = (typeof index === "number") ? (task.sources || [])[index] : null;
+  $("#modal").innerHTML = `
+    <h3>${editing ? "Edit source" : "Add source to task"}</h3>
+    <div class="notice" style="margin-bottom:12px">Task: <b>${esc(task.title)}</b></div>
+    <div class="field"><label>Label</label><input id="s-label" value="${esc(editing && editing.label ? editing.label : "")}" placeholder="e.g. Policy draft, SOP, skill file"></div>
+    <div class="field"><label>Link (URL) — optional</label><input id="s-url" value="${esc(editing && editing.url ? editing.url : "")}" placeholder="https://example.com/... or a local file path"></div>
+    <div class="field"><label>Local path — optional (shown if no link)</label><input id="s-path" value="${esc(editing && editing.path ? editing.path : "")}" placeholder="Documents/SOD of all department/..."></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="s-cancel">Cancel</button>
+      <button class="btn" id="s-save">${editing ? "Save changes" : "Save source"}</button>
+    </div>`;
+  openModal();
+  $("#s-cancel").onclick = closeModal;
+  $("#s-save").onclick = () => {
+    const label = $("#s-label").value.trim();
+    const url = $("#s-url").value.trim();
+    const path = $("#s-path").value.trim();
+    if (!label && !url && !path) { toast("Add a label or link"); return; }
+    const src = { label: label || (url || path) };
+    if (url) src.url = url;
+    if (path) src.path = path;
+    if (editing) {
+      task.sources = (task.sources || []).slice();
+      task.sources[index] = src;
+    } else {
+      task.sources = (task.sources || []).concat([src]);
+    }
+    save(); closeModal(); renderTasks(); toast(editing ? "Source updated ✓" : "Source added");
+  };
+}
+
+/* ---------- Task updates & local editing (direct control) ---------- */
+function addUpdate(taskId, text) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  t.updates = (t.updates || []).concat([{ id: uid(), text: text.trim(), at: new Date().toISOString() }]);
+}
+function toggleTaskStatus(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  if (t.status === "done") { t.status = "open"; addUpdate(taskId, "Re-opened (re-continued)"); }
+  else { t.status = "done"; addUpdate(taskId, "Marked done"); }
+  save(); renderTasks(); renderBoard(); renderRoadmap();
+  toast(t.status === "done" ? "Marked done ✓" : "Re-opened");
+}
+function moveTask(id, dir) {
+  let list = visibleTasks().slice();
+  if (taskFilter !== "all") list = list.filter(t => t.status === taskFilter);
+  if (tagFilter) list = list.filter(t => (t.tags || []).includes(tagFilter));
+  list.sort((a, b) => {
+    const ao = a.order == null ? 1e9 : a.order;
+    const bo = b.order == null ? 1e9 : b.order;
+    if (ao !== bo) return ao - bo;
+    return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+  });
+  list.forEach((x, i) => { x.order = i; });
+  const idx = list.findIndex(x => x.id === id);
+  const j = idx + dir;
+  if (idx < 0 || j < 0 || j >= list.length) return;
+  const tmp = list[idx].order; list[idx].order = list[j].order; list[j].order = tmp;
+  save(); renderTasks();
+}
+function deleteTask(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  if (!confirm(`Delete "${t.title}"?`)) return;
+  state.tasks = state.tasks.filter(x => x.id !== id);
+  save(); renderTasks(); renderBoard(); renderRoadmap();
+  toast("Task deleted");
+}
+function openAddUpdate(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  $("#modal").innerHTML = `
+    <h3>Add update</h3>
+    <div class="notice" style="margin-bottom:12px">Task: <b>${esc(t.title)}</b></div>
+    <div class="field"><label>Progress note / update</label><textarea id="u-text" placeholder="What did you do? What's next?"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="u-cancel">Cancel</button>
+      <button class="btn" id="u-save">Save update</button>
+    </div>`;
+  openModal();
+  $("#u-cancel").onclick = closeModal;
+  $("#u-save").onclick = () => {
+    const text = $("#u-text").value.trim();
+    if (!text) { toast("Write something first"); return; }
+    addUpdate(taskId, text);
+    toast("Update added ✓");
+    save(); closeModal(); renderTasks(); renderBoard(); renderRoadmap();
+  };
+}
+function openEditTask(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  const statusOpts = Object.keys(STATUS).map(k => `<option value="${k}" ${t.status===k?"selected":""}>${STATUS[k]}</option>`).join("");
+  const prioOpts = ["low","medium","high"].map(p => `<option value="${p}" ${t.priority===p?"selected":""}>${p}</option>`).join("");
+  const typeOpts = Object.keys(ISSUE_TYPES).map(k => `<option value="${k}" ${t.type===k?"selected":""}>${ISSUE_TYPES[k].icon} ${ISSUE_TYPES[k].label}</option>`).join("");
+  const assigneeOpts = `<option value="">— unassigned —</option>` + TEAM.map(m => `<option value="${m.id}" ${t.assignee===m.id?"selected":""}>${esc(m.name)} (${m.role})</option>`).join("");
+  const pointsOpts = ["", "1", "2", "3", "5", "8"].map(p => `<option value="${p}" ${String(t.points ?? "")===p?"selected":""}>${p === "" ? "—" : p}</option>`).join("");
+  $("#modal").innerHTML = `
+    <h3>Edit task</h3>
+    <div class="field"><label>Title *</label><input id="e-title" value="${esc(t.title)}"></div>
+    <div class="field"><label>Description</label><textarea id="e-desc">${esc(t.desc || "")}</textarea></div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Type</label><select id="e-type">${typeOpts}</select></div>
+      <div class="field" style="flex:1"><label>Assignee</label><select id="e-assignee">${assigneeOpts}</select></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Status</label><select id="e-status">${statusOpts}</select></div>
+      <div class="field" style="flex:1"><label>Priority</label><select id="e-prio">${prioOpts}</select></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Story points</label><select id="e-points">${pointsOpts}</select></div>
+      <div class="field" style="flex:1"><label>Estimated hours</label><input id="e-hours" type="number" min="0" step="0.5" value="${esc(t.estimatedHours == null ? "" : t.estimatedHours)}"></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Project</label><input id="e-project" value="${esc(t.project || "")}"></div>
+      <div class="field" style="flex:1"><label>Due date</label><input id="e-due" type="date" value="${esc(t.due || "")}"></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Sprint</label><input id="e-sprint" value="${esc(t.sprint || "")}" placeholder="e.g. Week 38"></div>
+    </div>
+    <div class="field"><label>Tags (comma-separated)</label><input id="e-tags" value="${esc((t.tags || []).join(", "))}"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="e-cancel">Cancel</button>
+      <button class="btn" id="e-save">Save changes</button>
+    </div>`;
+  openModal();
+  $("#e-cancel").onclick = closeModal;
+  $("#e-save").onclick = () => {
+    const title = $("#e-title").value.trim();
+    if (!title) { toast("Title is required"); return; }
+    const newStatus = $("#e-status").value;
+    if (newStatus !== t.status) {
+      t.status = newStatus;
+      addUpdate(taskId, "Status → " + (STATUS[newStatus] || newStatus));
+    }
+    t.title = title;
+    t.desc = $("#e-desc").value.trim();
+    t.type = $("#e-type").value;
+    t.assignee = $("#e-assignee").value || null;
+    t.points = $("#e-points").value === "" ? null : +$("#e-points").value;
+    t.estimatedHours = $("#e-hours").value ? +$("#e-hours").value : null;
+    t.sprint = $("#e-sprint").value.trim() || null;
+    t.priority = $("#e-prio").value;
+    t.project = $("#e-project").value.trim();
+    t.due = $("#e-due").value || null;
+    t.tags = $("#e-tags").value.split(",").map(s => s.trim()).filter(Boolean);
+    save(); closeModal(); renderTasks(); renderBoard(); renderRoadmap(); toast("Task updated ✓");
+  };
+}
+function openAddTask(preTitle, preDesc) {
+  const prioOpts = ["low","medium","high"].map(p => `<option value="${p}" ${p==="medium"?"selected":""}>${p}</option>`).join("");
+  const typeOpts = Object.keys(ISSUE_TYPES).map(k => `<option value="${k}" ${k==="task"?"selected":""}>${ISSUE_TYPES[k].icon} ${ISSUE_TYPES[k].label}</option>`).join("");
+  const assigneeOpts = `<option value="">— unassigned —</option>` + TEAM.map(m => `<option value="${m.id}">${esc(m.name)} (${m.role})</option>`).join("");
+  const pointsOpts = ["", "1", "2", "3", "5", "8"].map(p => `<option value="${p}">${p === "" ? "—" : p}</option>`).join("");
+  $("#modal").innerHTML = `
+    <h3>New task</h3>
+    <div class="notice" style="margin-bottom:12px">Adds instantly — you control it. opencode reviews at day end.</div>
+    <div class="field"><label>Title *</label><input id="a-title" value="${esc(preTitle || "")}" placeholder="Task title"></div>
+    <div class="field"><label>Description</label><textarea id="a-desc" placeholder="What needs to be done?">${esc(preDesc || "")}</textarea></div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Type</label><select id="a-type">${typeOpts}</select></div>
+      <div class="field" style="flex:1"><label>Assignee</label><select id="a-assignee">${assigneeOpts}</select></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Priority</label><select id="a-prio">${prioOpts}</select></div>
+      <div class="field" style="flex:1"><label>Due date</label><input id="a-due" type="date"></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Story points</label><select id="a-points">${pointsOpts}</select></div>
+      <div class="field" style="flex:1"><label>Estimated hours</label><input id="a-hours" type="number" min="0" step="0.5"></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="field" style="flex:1"><label>Project</label><input id="a-project" placeholder="e.g. Learning"></div>
+      <div class="field" style="flex:1"><label>Sprint</label><input id="a-sprint" placeholder="e.g. Week 38"></div>
+    </div>
+    <div class="field"><label>Steps (one per line) — optional</label><textarea id="a-steps" placeholder="Draft outline&#10;Review with manager&#10;Finalize"></textarea></div>
+    <div class="field"><label>Tags (comma-separated)</label><input id="a-tags" placeholder="strategy, reporting"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="a-cancel">Cancel</button>
+      <button class="btn" id="a-save">Add task</button>
+    </div>`;
+  openModal();
+  $("#a-cancel").onclick = closeModal;
+  $("#a-save").onclick = () => {
+    const title = $("#a-title").value.trim();
+    if (!title) { toast("Title is required"); return; }
+    const steps = $("#a-steps").value.split("\n").map(s => s.trim()).filter(Boolean)
+      .map(text => ({ id: uid(), text, done: false }));
+    const t = {
+      id: uid(), title,
+      desc: $("#a-desc").value.trim(),
+      status: "open", source: "manual",
+      type: $("#a-type").value,
+      assignee: $("#a-assignee").value || null,
+      points: $("#a-points").value === "" ? null : +$("#a-points").value,
+      estimatedHours: $("#a-hours").value ? +$("#a-hours").value : null,
+      sprint: $("#a-sprint").value.trim() || null,
+      priority: $("#a-prio").value,
+      due: $("#a-due").value || null,
+      project: $("#a-project").value.trim(),
+      tags: $("#a-tags").value.split(",").map(s => s.trim()).filter(Boolean),
+      steps,
+      createdAt: new Date().toISOString(),
+      updates: []
+    };
+    state.tasks.push(t);
+    addUpdate(t.id, "Created");
+    save(); closeModal(); renderTasks(); renderBoard(); renderRoadmap(); toast("Task added ✓");
+  };
+}
+
+/* ---------- Team identity & visibility ---------- */
+function roleOf(memberId) {
+  const m = TEAM_BY_ID[memberId];
+  return m ? m.role : "admin";
+}
+function visibleTasks() {
+  const me = state.me;
+  if (!me || roleOf(me) === "admin") return state.tasks;
+  const myRole = roleOf(me);
+  const peerIds = TEAM.filter(m => m.role === "member" && m.id !== me).map(m => m.id);
+  return state.tasks.filter(t => {
+    if (t.assignee === me) return true;
+    if (!t.assignee) return true;
+    if (myRole === "member" && peerIds.includes(t.assignee)) return true;
+    return false;
+  });
+}
+function renderMePicker() {
+  const sel = $("#meSelect");
+  if (lockedMe && lockedMe.id) {
+    sel.innerHTML = `<option value="${esc(lockedMe.id)}">${esc(lockedMe.name)} (${lockedMe.role})</option>`;
+    sel.disabled = true;
+    sel.title = "Signed in as " + lockedMe.name + " (" + lockedMe.role + ")";
+    return;
+  }
+  sel.disabled = false;
+  sel.removeAttribute("title");
+  const opts = [`<option value="">👥 Everyone (Admin view)</option>`]
+    .concat(TEAM.map(m => `<option value="${m.id}" ${state.me === m.id ? "selected" : ""}>${esc(m.name)} (${m.role})</option>`))
+    .join("");
+  sel.innerHTML = opts;
+  sel.onchange = () => { state.me = sel.value || null; save(); renderAll(); };
+}
+
+/* ---------- Auth (email + password) ---------- */
+function showLogin(message) {
+  const screen = $("#loginScreen");
+  if (!screen) return;
+  screen.style.display = "flex";
+  const err = $("#loginError");
+  err.style.display = "none";
+  err.textContent = "";
+  if (message) { err.textContent = message; err.style.display = "block"; }
+  $("#loginPw").value = "";
+  setTimeout(() => $("#loginEmail").focus(), 50);
+}
+function hideLogin() {
+  const screen = $("#loginScreen");
+  if (screen) screen.style.display = "none";
+}
+async function doLogin() {
+  const email = $("#loginEmail").value.trim().toLowerCase();
+  const pw = $("#loginPw").value;
+  if (!email || !pw) { showLogin("Enter your email and password."); return; }
+  const btn = $("#loginBtn");
+  btn.disabled = true; btn.textContent = "Signing in…";
+  try {
+    const r = await fetch(API_BASE + "/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password: pw })
+    });
+    const j = await r.json();
+    if (!r.ok || !j.token) { showLogin(j.error || "Sign in failed."); return; }
+    sessionToken = j.token;
+    localStorage.setItem(AUTH_KEY, sessionToken);
+    lockedMe = j.user;
+    state.me = j.user.id;
+    hideLogin();
+    renderAuth();
+    renderAll();
+    await pullFromServer();
+    toast("Welcome, " + j.user.name + " ✓");
+  } catch (e) {
+    showLogin("Couldn't reach the server. Check your connection.");
+  } finally {
+    btn.disabled = false; btn.textContent = "Sign in";
+  }
+}
+function logout() {
+  sessionToken = null;
+  lockedMe = null;
+  state.me = null;
+  localStorage.removeItem(AUTH_KEY);
+  renderAuth();
+  showLogin();
+  setSync("local");
+  renderAll();
+}
+function renderAuth() {
+  const authed = !!sessionToken && !!lockedMe;
+  const lo = $("#logoutBtn"); if (lo) lo.style.display = authed ? "" : "none";
+  const cp = $("#changePwBtn"); if (cp) cp.style.display = authed ? "" : "none";
+}
+function changePassword() {
+  const cur = prompt("Current password:");
+  if (cur === null) return;
+  const next = prompt("New password (min 8 characters):");
+  if (next === null) return;
+  if (next.length < 8) { toast("New password must be at least 8 characters"); return; }
+  fetch(API_BASE + "/api/password", {
+    method: "POST",
+    headers: apiHeaders(),
+    body: JSON.stringify({ currentPassword: cur, newPassword: next })
+  })
+    .then(r => r.json())
+    .then(j => { if (j.ok) toast("Password updated ✓"); else toast("Couldn't change password: " + (j.error || "unknown")); })
+    .catch(() => toast("Couldn't change password — offline"));
+}
+
+/* ---------- Steps (checklist) ---------- */
+function stepsOf(t) { return t.steps || []; }
+function stepProgress(t) {
+  const s = stepsOf(t);
+  if (!s.length) return null;
+  const done = s.filter(x => x.done).length;
+  return { done, total: s.length, pct: Math.round(done / s.length * 100) };
+}
+function progressBar(p) {
+  return `<div class="sub-progress" title="${p.done}/${p.total} steps done">
+    <div class="sp-track"><span class="sp-fill" style="width:${p.pct}%"></span></div>
+    <span class="sp-label">${p.done}/${p.total} steps · ${p.pct}%</span>
+  </div>`;
+}
+function stepsBlock(t) {
+  const steps = stepsOf(t);
+  if (!steps.length) return "";
+  const items = steps.map(s => `
+    <label class="step ${s.done ? "done" : ""}">
+      <input type="checkbox" ${s.done ? "checked" : ""} ${READ_ONLY ? "disabled" : ""} data-step="${esc(t.id)}" data-step-id="${esc(s.id)}">
+      <span>${esc(s.text)}</span>
+    </label>`).join("");
+  return `<div class="steps-block">${items}</div>`;
+}
+function toggleStep(taskId, stepId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  const s = t && (t.steps || []).find(x => x.id === stepId);
+  if (!s) return;
+  s.done = !s.done;
+  save(); renderTasks(); renderBoard(); renderRoadmap();
+}
+function removeStep(taskId, stepId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  t.steps = (t.steps || []).filter(x => x.id !== stepId);
+  save(); renderTasks(); renderBoard(); renderRoadmap();
+}
+function openAddStep(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  $("#modal").innerHTML = `
+    <h3>Steps — ${esc(t.title)}</h3>
+    <div class="notice" style="margin-bottom:12px">Break the work into steps, one per line. Check them off as you finish.</div>
+    <div class="field"><label>Steps</label><textarea id="s-text" placeholder="Draft outline&#10;Review with manager&#10;Finalize">${esc(stepsOf(t).map(s => s.text).join("\n"))}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="s-cancel">Cancel</button>
+      <button class="btn" id="s-save">Save steps</button>
+    </div>`;
+  openModal();
+  $("#s-cancel").onclick = closeModal;
+  $("#s-save").onclick = () => {
+    const lines = $("#s-text").value.split("\n").map(s => s.trim()).filter(Boolean);
+    const prevDone = {};
+    stepsOf(t).forEach(s => { prevDone[s.text] = s.done; });
+    t.steps = lines.map(text => ({ id: uid(), text, done: !!prevDone[text] }));
+    save(); closeModal(); renderTasks(); renderBoard(); renderRoadmap();
+    toast(t.steps.length ? t.steps.length + " step(s) saved ✓" : "Steps cleared");
+  };
+}
+function isSystemUpdateText(t) {
+  const s = (t || "").trim();
+  return /^Created$/.test(s) || /^Marked done$/.test(s) || /^Re-opened/.test(s) || /^Status\s/.test(s);
+}
+function migrateLegacySubtasks() {
+  if (READ_ONLY || state.migratedLegacySubtasks) return;
+  let moved = 0;
+  for (const t of state.tasks.slice()) {
+    if (!t.parentId) continue;
+    const parent = state.tasks.find(x => x.id === t.parentId);
+    if (!parent) continue;
+    parent.steps = (parent.steps || []).concat([{ id: uid(), text: t.title.trim(), done: t.status === "done" }]);
+    state.tasks = state.tasks.filter(x => x.id !== t.id);
+    moved++;
+  }
+  state.migratedLegacySubtasks = true;
+  if (moved) { save(); toast("Moved " + moved + " old subtask(s) into step lists ✓"); }
+}
+
+/* ---------- Board (Kanban) ---------- */
+let boardSprint = "all";
+function sprintsOf() {
+  const set = new Set();
+  state.tasks.forEach(t => { if (t.sprint) set.add(t.sprint); });
+  return Array.from(set).sort();
+}
+function boardCard(t) {
+  const typeInfo = ISSUE_TYPES[t.type] || ISSUE_TYPES.task;
+  const assignee = TEAM_BY_ID[t.assignee];
+  const stepCount = stepsOf(t).length;
+  const prog = stepProgress(t);
+  const meta = [
+    assignee ? `👤 ${esc(assignee.name)}` : "",
+    t.points != null ? `⚡${t.points}` : "",
+    t.project ? esc(t.project) : "",
+    t.due ? `⏳${esc(t.due)}` : "",
+    stepCount ? `✓${stepCount}` : "",
+    (t.comments || []).length ? `💬${t.comments.length}` : ""
+  ].filter(Boolean).join(" · ");
+  return `<div class="board-card" draggable="true" data-id="${esc(t.id)}">
+    <div class="bt">${typeInfo.icon} ${esc(t.title)}</div>
+    ${meta ? `<div class="bm">${meta}</div>` : ""}
+    ${prog ? progressBar(prog) : ""}
+  </div>`;
+}
+function renderBoard() {
+  const sprints = sprintsOf();
+  const bar = `<button class="chip ${boardSprint === "all" ? "active" : ""}" data-bs="all">All sprints</button>` +
+    sprints.map(s => `<button class="chip ${boardSprint === s ? "active" : ""}" data-bs="${esc(s)}">${esc(s)}</button>`).join("");
+  $("#boardSprintBar").innerHTML = bar;
+  $$("#boardSprintBar [data-bs]").forEach(c => c.onclick = () => { boardSprint = c.dataset.bs; renderBoard(); });
+
+  const order = ["open", "progress", "review", "done"];
+  const list = visibleTasks().filter(t => boardSprint === "all" || t.sprint === boardSprint);
+  $("#board").innerHTML = order.map(st => {
+    const items = list.filter(t => t.status === st);
+    const cards = items.map(boardCard).join("");
+    return `<div class="board-col" data-col="${st}">
+      <div class="board-col-head">${STATUS[st]} <span class="cnt">${items.length}</span></div>
+      ${cards || `<div class="board-empty">Drop here</div>`}
+    </div>`;
+  }).join("");
+  wireBoardDrag();
+}
+function wireBoardDrag() {
+  let dragId = null;
+  $$("#board .board-card").forEach(card => {
+    card.ondragstart = e => { dragId = card.dataset.id; card.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; };
+    card.ondragend = () => { card.classList.remove("dragging"); $$("#board .board-col").forEach(c => c.classList.remove("drag-over")); };
+  });
+  $$("#board .board-col").forEach(col => {
+    col.ondragover = e => { e.preventDefault(); col.classList.add("drag-over"); };
+    col.ondragleave = () => col.classList.remove("drag-over");
+    col.ondrop = e => { e.preventDefault(); col.classList.remove("drag-over"); if (!dragId) return; moveToStatus(dragId, col.dataset.col); dragId = null; };
+  });
+}
+function moveToStatus(id, status) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t || t.status === status) return;
+  t.status = status;
+  addUpdate(id, "Status → " + (STATUS[status] || status));
+  save(); renderBoard(); renderTasks(); renderRoadmap();
+  toast("Moved to " + (STATUS[status] || status));
+}
+
+/* ---------- Roadmap / timeline ---------- */
+function renderRoadmap() {
+  const html = [];
+  sprintsOf().forEach(s => {
+    const ts = visibleTasks().filter(t => t.sprint === s);
+    html.push(`<div class="roadmap-group"><h3>🏁 ${esc(s)}</h3>${roadmapRows(ts)}</div>`);
+  });
+  const noSprint = visibleTasks().filter(t => !t.sprint);
+  if (noSprint.length) html.push(`<div class="roadmap-group"><h3>📌 No sprint</h3>${roadmapRows(noSprint)}</div>`);
+  $("#roadmap").innerHTML = html.join("") || `<div class="empty"><div class="big">🗺</div>No tasks yet. Add tasks with a sprint or due date to see a timeline.</div>`;
+}
+function roadmapMeta(t) {
+  const assignee = TEAM_BY_ID[t.assignee];
+  const prog = stepProgress(t);
+  const bits = [
+    assignee ? `👤 ${esc(assignee.name)}` : "",
+    t.points != null ? `⚡${t.points} pts` : "",
+    STATUS[t.status] || t.status
+  ].filter(Boolean).join(" · ");
+  const progHtml = prog ? progressBar(prog) : "";
+  return (bits || progHtml) ? `<div class="r-meta">${bits}${progHtml}</div>` : "";
+}
+function roadmapRows(ts) {
+  const withDue = ts.filter(t => t.due);
+  const noDue = ts.filter(t => !t.due);
+  const all = visibleTasks().filter(t => t.due);
+  let min = all.length ? all.reduce((m, t) => t.due < m ? t.due : m, all[0].due) : todayStr();
+  let max = all.length ? all.reduce((m, t) => t.due > m ? t.due : m, all[0].due) : todayStr();
+  const span = Math.max(1, (new Date(max) - new Date(min)) / 86400000);
+  const rows = withDue.map(t => {
+    const off = Math.min(94, Math.max(0, (new Date(t.due) - new Date(min)) / 86400000) / span * 100);
+    const w = Math.max(7, 90 / span);
+    return `<div class="roadmap-row"><div class="r-title" title="${esc(t.title)}">${esc(t.title)}${roadmapMeta(t)}</div><div class="roadmap-track"><div class="roadmap-bar st-${esc(t.status)}" style="left:${off}%;width:${w}%"><span class="lbl">${esc(t.due)}</span></div></div></div>`;
+  });
+  const noduerows = noDue.map(t => `<div class="roadmap-row"><div class="r-title">${esc(t.title)}${roadmapMeta(t)}</div><div class="small muted">— no due date</div></div>`);
+  return rows.join("") + noduerows.join("");
+}
+
+/* ---------- Comments ---------- */
+function openComments(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  const comments = (t.comments || []).map(c => {
+    const who = TEAM_BY_ID[c.by] ? TEAM_BY_ID[c.by].name : (c.by || "you");
+    return `<div class="comment"><div class="c-head"><span>👤 ${esc(who)}</span><span>${fmtDateTime(c.at)}</span></div><div class="c-body">${esc(c.text)}</div></div>`;
+  }).join("");
+  $("#modal").innerHTML = `
+    <h3>Comments — ${esc(t.title)}</h3>
+    <div id="c-list" style="max-height:320px;overflow:auto;margin-bottom:12px">${comments || `<div class="small muted">No comments yet.</div>`}</div>
+    <div class="field"><textarea id="c-text" placeholder="Add a comment…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="c-cancel">Close</button>
+      <button class="btn" id="c-save">Add comment</button>
+    </div>`;
+  openModal();
+  $("#c-cancel").onclick = closeModal;
+  $("#c-save").onclick = () => {
+    const text = $("#c-text").value.trim();
+    if (!text) { toast("Write something first"); return; }
+    addComment(taskId, text);
+    save(); closeModal(); renderTasks(); renderBoard(); toast("Comment added ✓");
+  };
+}
+function addComment(taskId, text) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  t.comments = (t.comments || []).concat([{ id: uid(), by: state.me || "you", text: text.trim(), at: new Date().toISOString() }]);
+}
+
+/* ---------- Requests ---------- */
+function openRequest(type, taskId, presetNote) {
+  const task = state.tasks.find(t => t.id === taskId);
+  const isAdd = type === "add";
+  $("#modal").innerHTML = `
+    <h3>${isAdd ? "Ask opencode to add a task" : "Ask opencode to review"}</h3>
+    ${task ? `<div class="notice" style="margin-bottom:12px">Task: <b>${esc(task.title)}</b></div>` : ""}
+    <div class="field"><label>Title *</label><input id="r-title" value="${esc(task ? task.title : "")}" placeholder="Task title"></div>
+    <div class="field"><label>Description / what to review</label><textarea id="r-desc" placeholder="What should opencode verify or rewrite, and why?">${presetNote || ""}</textarea></div>
+    <div class="field"><label>Priority</label><select id="r-prio"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+    ${task ? "" : `<div class="field"><label>Project</label><input id="r-project" placeholder="e.g. Learning"></div>`}
+    <div class="modal-actions">
+      <button class="btn ghost" id="r-cancel">Cancel</button>
+      <button class="btn" id="r-submit">Send to opencode</button>
+    </div>`;
+  openModal();
+  $("#r-cancel").onclick = closeModal;
+  $("#r-submit").onclick = () => {
+    const title = $("#r-title").value.trim();
+    if (!title) { toast("Title is required"); return; }
+    const req = {
+      id: uid(),
+      type: isAdd ? "add" : "change",
+      taskId: task ? task.id : null,
+      title,
+      desc: $("#r-desc").value.trim(),
+      priority: $("#r-prio").value,
+      project: isAdd ? ($("#r-project") ? $("#r-project").value.trim() : "") : (task ? task.project : ""),
+      status: "pending",
+      createdAt: new Date().toISOString()
+    };
+    state.requests.push(req);
+    save();
+    closeModal();
+    toast("Request submitted — pending opencode approval");
+    sendRequestsToOpencode();
+  };
+}
+
+function renderRequests() {
+  const r = state.requests.slice().reverse();
+  $("#modal").innerHTML = `
+    <h3>Requests</h3>
+    <div class="notice" style="margin-bottom:12px">Requests are reviewed by opencode. When approved, they appear as tasks.</div>
+    <div id="reqBody"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="req-close">Close</button>
+      <button class="btn" id="req-export">Export to opencode</button>
+    </div>`;
+  openModal();
+  $("#req-close").onclick = closeModal;
+  $("#req-export").onclick = () => { sendRequestsToOpencode(true); };
+  const body = $("#reqBody");
+  if (!r.length) { body.innerHTML = '<div class="empty small">No requests yet.</div>'; return; }
+  body.innerHTML = r.map(x => `
+    <div class="task-item" style="padding:11px 13px">
+      <div class="task-body">
+        <div class="task-title" style="font-size:13.5px">${esc(x.title)}</div>
+        <div class="task-desc">${esc(x.desc || "")}</div>
+        <div class="task-meta"><span class="badge ${x.type==='add'?'auto':'opencode'}">${x.type==='add'?'➕ add':'✏️ change'}</span><span class="badge ${x.status}">${x.status}</span><span class="small muted">${fmtDateTime(x.createdAt)}</span></div>
+      </div>
+    </div>`).join("");
+}
+
+async function sendRequestsToOpencode(forceDownload) {
+  const pending = state.requests;
+  if (!pending.length) { toast("No requests to send"); return; }
+  try {
+    const resp = await fetch(REQUESTS_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requests: pending })
+    });
+    if (resp.ok) {
+      toast("Requests sent to opencode ✓");
+      return;
+    }
+    throw new Error("no server");
+  } catch (e) {
+    if (forceDownload || true) downloadJson("opencode-requests.json", { requests: pending });
+  }
+}
+function downloadJson(name, obj) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("Downloaded " + name + " — hand to opencode");
+}
+
+/* ============================================================
+   LINKS (user-managed)
+============================================================ */
+const LINK_STYLES = {
+  dashboard: { bg: "rgba(47,191,143,.18)", fg: "#2fbf8f", ico: "📊" },
+  doc: { bg: "rgba(53,211,155,.18)", fg: "#35d39b", ico: "📄" },
+  sheet: { bg: "rgba(53,184,166,.18)", fg: "#35b8a6", ico: "📊" },
+  other: { bg: "rgba(139,160,154,.18)", fg: "#8ba09a", ico: "🔗" }
+};
+function renderLinks() {
+  const list = state.links;
+  if (!list.length) {
+    $("#linkList").innerHTML = '<div class="empty"><div class="big">🔗</div>No links yet.<br>Add your dashboards, Google Docs &amp; Sheets, and useful links.</div>';
+    return;
+  }
+  $("#linkList").innerHTML = list.map((l, i) => {
+    const s = LINK_STYLES[l.category] || LINK_STYLES.other;
+    return `
+    <div class="link-card">
+      <div class="link-ico" style="background:${s.bg};color:${s.fg}">${s.ico}</div>
+      <div class="link-body">
+        <div class="link-name">${esc(l.name)}</div>
+        <div class="link-url">${esc(l.url)}</div>
+      </div>
+      <div class="row">
+        <button class="btn ghost small" data-move="${esc(l.id)}" data-dir="-1" title="Move up">↑</button>
+        <button class="btn ghost small" data-move="${esc(l.id)}" data-dir="1" title="Move down">↓</button>
+        <a href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a>
+        <button class="btn ghost small" data-edit="${esc(l.id)}">Edit</button>
+        <button class="btn danger small" data-del="${esc(l.id)}">Remove</button>
+      </div>
+    </div>`;
+  }).join("");
+  $$("#linkList [data-move]").forEach(b => b.onclick = () => moveLink(b.dataset.move, +b.dataset.dir));
+  $$("#linkList [data-del]").forEach(b => b.onclick = () => { state.links = state.links.filter(x => x.id !== b.dataset.del); state.removedLinks = state.removedLinks || []; if (!state.removedLinks.includes(b.dataset.del)) state.removedLinks.push(b.dataset.del); save(); renderLinks(); toast("Link removed"); });
+  $$("#linkList [data-edit]").forEach(b => b.onclick = () => openLinkForm(state.links.find(x => x.id === b.dataset.edit)));
+}
+function moveLink(id, dir) {
+  const i = state.links.findIndex(x => x.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= state.links.length) return;
+  const tmp = state.links[i]; state.links[i] = state.links[j]; state.links[j] = tmp;
+  save(); renderLinks();
+}
+function openLinkForm(link) {
+  const isEdit = !!link;
+  $("#modal").innerHTML = `
+    <h3>${isEdit ? "Edit link" : "Add link"}</h3>
+    <div class="field"><label>Name *</label><input id="l-name" value="${esc(link ? link.name : "")}" placeholder="e.g. Habit Tracker"></div>
+    <div class="field"><label>URL *</label><input id="l-url" value="${esc(link ? link.url : "")}" placeholder="https://..."></div>
+    <div class="field"><label>Category</label><select id="l-cat">
+      ${Object.keys(LINK_STYLES).map(k => `<option value="${k}" ${link && link.category===k?"selected":""}>${k[0].toUpperCase()+k.slice(1)}</option>`).join("")}
+    </select></div>
+    <div class="modal-actions"><button class="btn ghost" id="l-cancel">Cancel</button><button class="btn" id="l-save">Save</button></div>`;
+  openModal();
+  $("#l-cancel").onclick = closeModal;
+  $("#l-save").onclick = () => {
+    const name = $("#l-name").value.trim(), url = $("#l-url").value.trim();
+    if (!name || !url) { toast("Name and URL required"); return; }
+    if (isEdit) {
+      Object.assign(link, { name, url: normalizeUrl(url), category: $("#l-cat").value });
+    } else {
+      state.links.push({ id: uid(), name, url: normalizeUrl(url), category: $("#l-cat").value, createdAt: new Date().toISOString() });
+    }
+    save(); closeModal(); renderLinks(); toast("Link saved");
+  };
+}
+function normalizeUrl(u) { return /^https?:\/\//i.test(u) ? u : "https://" + u; }
+
+/* ============================================================
+   NOTES (doc / sheet / design)
+============================================================ */
+let noteType = "doc";
+let activeNoteId = null;
+
+function renderNotes() {
+  renderNoteTabs();
+  renderNoteList();
+  renderNoteMain();
+}
+function renderNoteTabs() {
+  $$("#noteSubtabs .chip").forEach(c => c.onclick = () => {
+    noteType = c.dataset.type;
+    $$("#noteSubtabs .chip").forEach(x => x.classList.toggle("active", x === c));
+    const first = state.notes.find(n => n.type === noteType);
+    if (first) activeNoteId = first.id; else activeNoteId = null;
+    renderNoteList(); renderNoteMain();
+  });
+  $$("#noteSubtabs .chip").forEach(x => x.classList.toggle("active", x.dataset.type === noteType));
+}
+function renderNoteList() {
+  const notes = state.notes.filter(n => n.type === noteType);
+  $("#noteList").innerHTML = notes.length ? notes.map(n => `
+    <div class="note-item ${n.id===activeNoteId?"active":""}" data-id="${esc(n.id)}">
+      <div style="font-weight:650;color:var(--text)">${esc(n.title || "Untitled")}</div>
+      <div class="small muted">${fmtDate(n.updatedAt)}</div>
+    </div>`).join("") : '<div class="small muted" style="padding:10px">No notes</div>';
+  $$("#noteList .note-item").forEach(el => el.onclick = () => { activeNoteId = el.dataset.id; renderNoteList(); renderNoteMain(); });
+}
+function renderNoteMain() {
+  const main = $("#noteMain");
+  const note = state.notes.find(n => n.id === activeNoteId);
+  if (!note) {
+    main.innerHTML = `<div class="empty"><div class="big">📝</div>No ${noteType} note selected.<br><br><button class="btn" onclick="createNote('${noteType}')">+ Create ${noteType} note</button></div>`;
+    return;
+  }
+  if (noteType === "doc") renderDoc(main, note);
+  else if (noteType === "sheet") renderSheet(main, note);
+  else renderDesign(main, note);
+}
+function createNote(type) {
+  const titles = { doc: "Untitled document", sheet: "Untitled spreadsheet", design: "Untitled design" };
+  const n = { id: uid(), type, title: titles[type], content: type==="sheet" ? JSON.stringify({ rows: 12, cols: 6, cells: {} }) : "", updatedAt: new Date().toISOString() };
+  state.notes.push(n); save(); activeNoteId = n.id; renderNoteList(); renderNoteMain();
+  if (type !== "sheet") toast("Note created");
+}
+
+/* ---- DOC editor ---- */
+function renderDoc(main, note) {
+  main.innerHTML = `
+    <div class="row" style="margin-bottom:10px">
+      <input id="doc-title" value="${esc(note.title)}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 12px;font-size:15px;font-weight:700;outline:none" placeholder="Title">
+      <button class="btn ghost small" id="doc-print">🖨 PDF</button>
+      <button class="btn ghost small" id="doc-dl">⬇ HTML</button>
+      <button class="btn danger small" id="doc-del">Delete</button>
+    </div>
+    <div class="toolbar" id="doc-toolbar">
+      <button data-cmd="bold" title="Bold"><b>B</b></button>
+      <button data-cmd="italic" title="Italic"><i>I</i></button>
+      <button data-cmd="underline" title="Underline"><u>U</u></button>
+      <button data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+      <span style="width:1px;background:var(--border);margin:2px 2px"></span>
+      <button data-cmd="formatBlock" data-val="h1" title="Heading 1">H1</button>
+      <button data-cmd="formatBlock" data-val="h2" title="Heading 2">H2</button>
+      <button data-cmd="formatBlock" data-val="h3" title="Heading 3">H3</button>
+      <button data-cmd="formatBlock" data-val="p" title="Paragraph">¶</button>
+      <span style="width:1px;background:var(--border);margin:2px 2px"></span>
+      <button data-cmd="insertUnorderedList" title="Bullet list">• List</button>
+      <button data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+      <button data-cmd="formatBlock" data-val="blockquote" title="Quote">❝</button>
+      <span style="width:1px;background:var(--border);margin:2px 2px"></span>
+      <button id="doc-link" title="Insert link">🔗</button>
+      <button id="doc-img" title="Insert image">🖼️</button>
+      <button id="doc-clear" title="Clear format">🧹</button>
+    </div>
+    <div class="editor" id="doc-editor" contenteditable="true"></div>
+    <div class="small muted" style="margin-top:8px">Auto-saves as you type.</div>`;
+  $("#doc-editor").innerHTML = note.content || "";
+  $("#doc-title").oninput = e => { note.title = e.target.value; note.updatedAt = new Date().toISOString(); save(); renderNoteList(); };
+  $("#doc-editor").oninput = () => { note.content = $("#doc-editor").innerHTML; note.updatedAt = new Date().toISOString(); save(); };
+  $("#doc-del").onclick = () => { if (confirm("Delete this note?")) { state.notes = state.notes.filter(n => n.id !== note.id); save(); activeNoteId = null; renderNoteList(); renderNoteMain(); } };
+  $("#doc-print").onclick = () => printHTML(note.title, note.content || "");
+  $("#doc-dl").onclick = () => downloadText((note.title||"document").replace(/[^\w\-]+/g,"_") + ".html", `<!doctype html><html><head><meta charset="utf-8"><title>${esc(note.title)}</title></head><body>${note.content||""}</body></html>`, "text/html");
+  $$("#doc-toolbar button[data-cmd]").forEach(b => b.onmousedown = e => {
+    e.preventDefault();
+    document.execCommand(b.dataset.cmd, false, b.dataset.val || null);
+    $("#doc-editor").oninput();
+  });
+  $("#doc-link").onclick = () => { const u = prompt("Link URL", "https://"); if (u) document.execCommand("createLink", false, u); };
+  $("#doc-img").onclick = () => { const u = prompt("Image URL", "https://"); if (u) document.execCommand("insertImage", false, u); };
+  $("#doc-clear").onclick = () => { document.execCommand("removeFormat"); document.execCommand("formatBlock", false, "p"); };
+}
+
+/* ---- SHEET editor ---- */
+function renderSheet(main, note) {
+  let data;
+  try { data = JSON.parse(note.content); } catch(e) { data = { rows: 12, cols: 6, cells: {} }; }
+  data.rows = data.rows || 12; data.cols = data.cols || 6; data.cells = data.cells || {};
+  main.innerHTML = `
+    <div class="row" style="margin-bottom:10px">
+      <input id="sh-title" value="${esc(note.title)}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 12px;font-size:15px;font-weight:700;outline:none">
+      <button class="btn ghost small" id="sh-addrow">+ Row</button>
+      <button class="btn ghost small" id="sh-addcol">+ Col</button>
+      <button class="btn ghost small" id="sh-csv">⬇ CSV</button>
+      <button class="btn danger small" id="sh-del">Delete</button>
+    </div>
+    <div class="small muted" style="margin-bottom:8px">Supports formulas like <b>=SUM(A1:B3)</b> and <b>=AVG(A1:A5)</b></div>
+    <div class="sheet-wrap" id="sh-wrap"></div>`;
+  $("#sh-title").oninput = e => { note.title = e.target.value; note.updatedAt = new Date().toISOString(); save(); renderNoteList(); };
+  $("#sh-del").onclick = () => { if (confirm("Delete this sheet?")) { state.notes = state.notes.filter(n => n.id !== note.id); save(); activeNoteId = null; renderNoteList(); renderNoteMain(); } };
+  $("#sh-addrow").onclick = () => { data.rows++; persistSheet(); renderSheet(main, note); };
+  $("#sh-addcol").onclick = () => { data.cols++; persistSheet(); renderSheet(main, note); };
+  $("#sh-csv").onclick = () => exportSheetCSV(note);
+
+  function persistSheet() { note.content = JSON.stringify(data); note.updatedAt = new Date().toISOString(); save(); }
+
+  const wrap = $("#sh-wrap");
+  let html = '<table><thead><tr><th class="corner"></th>';
+  const colLetters = [];
+  for (let c = 0; c < data.cols; c++) { colLetters.push(colName(c)); html += `<th>${colName(c)}</th>`; }
+  html += '</tr></thead><tbody>';
+  for (let r = 0; r < data.rows; r++) {
+    html += `<tr><th class="rowh">${r+1}</th>`;
+    for (let c = 0; c < data.cols; c++) {
+      const key = r + "," + c;
+      const raw = data.cells[key] !== undefined ? data.cells[key] : "";
+      const disp = raw && String(raw).trim().startsWith("=") ? evalFormula(raw, data.cells, colLetters) : raw;
+      html += `<td data-k="${key}"><input value="${esc(String(disp ?? ""))}" data-k="${key}"></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+
+  $$("#sh-wrap input").forEach(inp => {
+    inp.onfocus = () => { inp.closest("td").classList.add("sel"); };
+    inp.onblur = () => {
+      inp.closest("td").classList.remove("sel");
+      const k = inp.dataset.k;
+      const v = inp.value;
+      if (v === "") delete data.cells[k]; else data.cells[k] = v;
+      persistSheet();
+      renderSheet(main, note);
+    };
+    inp.onkeydown = e => { if (e.key === "Enter") inp.blur(); };
+  });
+}
+function colName(i) { let s = ""; i++; while (i > 0) { i--; s = String.fromCharCode(65 + (i % 26)) + s; i = Math.floor(i / 26); } return s; }
+function cellRefToIdx(ref) {
+  const m = /^([A-Z]+)(\d+)$/.exec(ref.toUpperCase().trim());
+  if (!m) return null;
+  let col = 0; for (const ch of m[1]) col = col * 26 + (ch.charCodeAt(0) - 64);
+  return { r: parseInt(m[2], 10) - 1, c: col - 1 };
+}
+function evalFormula(raw, cells) {
+  const f = String(raw).trim().slice(1).toUpperCase();
+  const m = /^(SUM|AVG|MIN|MAX|COUNT)\((.+)\)$/.exec(f);
+  if (!m) return raw;
+  const parts = m[2].split(",").map(s => s.trim());
+  let nums = [];
+  for (const p of parts) {
+    const range = /^([A-Z]+\d+):([A-Z]+\d+)$/.exec(p);
+    if (range) {
+      const a = cellRefToIdx(range[1]), b = cellRefToIdx(range[2]);
+      if (a && b) for (let r = Math.min(a.r,b.r); r <= Math.max(a.r,b.r); r++) for (let c = Math.min(a.c,b.c); c <= Math.max(a.c,b.c); c++) {
+        const v = cells[r + "," + c];
+        if (v != null && v !== "") { const n = parseFloat(v); if (!isNaN(n)) nums.push(n); }
+      }
+    } else {
+      const a = cellRefToIdx(p);
+      if (a) { const v = cells[a.r + "," + a.c]; const n = parseFloat(v); if (!isNaN(n)) nums.push(n); }
+      else { const n = parseFloat(p); if (!isNaN(n)) nums.push(n); }
+    }
+  }
+  if (!nums.length) return 0;
+  switch (m[1]) {
+    case "SUM": return nums.reduce((a,b)=>a+b,0);
+    case "AVG": return nums.reduce((a,b)=>a+b,0)/nums.length;
+    case "MIN": return Math.min(...nums);
+    case "MAX": return Math.max(...nums);
+    case "COUNT": return nums.length;
+  }
+  return 0;
+}
+
+/* ---- DESIGN editor ---- */
+let designState = null;
+function renderDesign(main, note) {
+  let objs;
+  try { objs = JSON.parse(note.content || "[]"); } catch(e) { objs = []; }
+  if (!Array.isArray(objs)) objs = [];
+  main.innerHTML = `
+    <div class="row" style="margin-bottom:10px">
+      <input id="ds-title" value="${esc(note.title)}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 12px;font-size:15px;font-weight:700;outline:none">
+      <button class="btn ghost small" id="ds-save">Download PNG</button>
+      <button class="btn danger small" id="ds-del">Delete</button>
+    </div>
+    <div class="toolbar" id="ds-toolbar">
+      <button data-t="select" class="on">🖱️</button>
+      <button data-t="rect">▭</button>
+      <button data-t="ellipse">◯</button>
+      <button data-t="line">╱</button>
+      <button data-t="text">T</button>
+      <button data-t="pen">✏️</button>
+      <span style="width:1px;background:var(--border);margin:2px 2px"></span>
+      <input type="color" id="ds-color" value="#2fbf8f" title="Color">
+      <input type="range" id="ds-size" min="1" max="20" value="3" title="Stroke width" style="width:80px">
+      <button id="ds-clear" title="Clear all">🗑️</button>
+    </div>
+    <div class="canvas-stage" id="ds-stage"><canvas id="ds-canvas" width="800" height="450"></canvas></div>
+    <div class="small muted" style="margin-top:8px">Draw shapes, lines and text. Select 🖱️ to move objects. Auto-saves.</div>`;
+
+  $("#ds-title").oninput = e => { note.title = e.target.value; note.updatedAt = new Date().toISOString(); save(); renderNoteList(); };
+  $("#ds-del").onclick = () => { if (confirm("Delete this design?")) { state.notes = state.notes.filter(n => n.id !== note.id); save(); activeNoteId = null; designState = null; renderNoteList(); renderNoteMain(); } };
+
+  const cv = $("#ds-canvas"), ctx = cv.getContext("2d");
+  let tool = "select", color = "#2fbf8f", size = 3;
+  let drawing = false, start = null, dragged = null, freehand = [];
+
+  designState = { cv, ctx, objs, tool, color, size, note, persist };
+  function persist() { note.content = JSON.stringify(objs); note.updatedAt = new Date().toISOString(); save(); }
+
+  function redraw() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, cv.width, cv.height);
+    for (const o of objs) drawObj(ctx, o);
+    if (freehand.length) { ctx.strokeStyle = color; ctx.lineWidth = size; ctx.beginPath(); freehand.forEach((p,i)=> i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)); ctx.stroke(); }
+  }
+  function drawObj(c, o) {
+    c.save(); c.strokeStyle = o.color; c.fillStyle = o.color; c.lineWidth = o.size || 3; c.globalAlpha = 1;
+    if (o.type === "rect") { c.strokeRect(o.x, o.y, o.w, o.h); }
+    else if (o.type === "ellipse") { c.beginPath(); c.ellipse(o.x+o.w/2, o.y+o.h/2, Math.abs(o.w)/2, Math.abs(o.h)/2, 0, 0, 7); c.stroke(); }
+    else if (o.type === "line") { c.beginPath(); c.moveTo(o.x, o.y); c.lineTo(o.x+o.w, o.y+o.h); c.stroke(); }
+    else if (o.type === "text") { c.font = `${o.size*5+16}px Segoe UI`; c.fillText(o.text, o.x, o.y); }
+    else if (o.type === "pen") { c.beginPath(); (o.points||[]).forEach((p,i)=> i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y)); c.stroke(); }
+    c.restore();
+  }
+  function hit(o, mx, my) {
+    const pad = 6;
+    if (o.type === "text") { const w = ctx.measureText(o.text).width; return mx >= o.x-pad && mx <= o.x+w+pad && my >= o.y-(o.size*5+16)+pad-8 && my <= o.y+8; }
+    const x = Math.min(o.x, o.x+o.w) - pad, y = Math.min(o.y, o.y+o.h) - pad, w = Math.abs(o.w)+pad*2, h = Math.abs(o.h)+pad*2;
+    return mx >= x && mx <= x+w && my >= y && my <= y+h;
+  }
+  function pos(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX-r.left) * (cv.width/r.width), y: (e.clientY-r.top) * (cv.height/r.height) }; }
+
+  $$("#ds-toolbar button[data-t]").forEach(b => b.onclick = () => {
+    tool = b.dataset.t;
+    $$("#ds-toolbar button[data-t]").forEach(x => x.classList.toggle("on", x === b));
+  });
+  $("#ds-color").oninput = e => color = e.target.value;
+  $("#ds-size").oninput = e => size = +e.target.value;
+  $("#ds-clear").onclick = () => { objs.length = 0; persist(); redraw(); };
+  $("#ds-save").onclick = () => { const a = document.createElement("a"); a.download = (note.title||"design") + ".png"; a.href = cv.toDataURL(); a.click(); };
+
+  cv.onmousedown = e => {
+    const p = pos(e);
+    if (tool === "select") {
+      for (let i = objs.length - 1; i >= 0; i--) if (hit(objs[i], p.x, p.y)) { dragged = { obj: objs[i], dx: p.x - objs[i].x, dy: p.y - objs[i].y }; break; }
+      return;
+    }
+    if (tool === "pen") { freehand = [p]; drawing = true; return; }
+    drawing = true; start = p;
+    if (tool === "text") {
+      const txt = prompt("Text:", "Hello"); if (txt) { objs.push({ type: "text", x: p.x, y: p.y, text: txt, color, size }); persist(); redraw(); }
+      drawing = false; return;
+    }
+  };
+  cv.onmousemove = e => {
+    const p = pos(e);
+    if (dragged) { dragged.obj.x = p.x - dragged.dx; dragged.obj.y = p.y - dragged.dy; redraw(); return; }
+    if (!drawing) return;
+    if (tool === "pen") { freehand.push(p); redraw(); }
+  };
+  cv.onmouseup = e => {
+    if (dragged) { dragged = null; persist(); return; }
+    if (!drawing) return;
+    drawing = false;
+    const p = pos(e);
+    if (tool === "pen") { objs.push({ type: "pen", points: freehand.slice(), color, size }); freehand = []; }
+    else if (start) {
+      const w = p.x - start.x, h = p.y - start.y;
+      if (Math.abs(w) > 2 || Math.abs(h) > 2) objs.push({ type: tool, x: start.x, y: start.y, w, h, color, size });
+    }
+    start = null; persist(); redraw();
+  };
+  cv.onmouseleave = cv.onmouseup;
+  redraw();
+}
+
+/* ============================================================
+   opencode sync
+============================================================ */
+async function syncFromOpencode() {
+  setSync("syncing");
+  try {
+    const resp = await fetch(OPENCODE_URL, { cache: "no-store" });
+    if (!resp.ok) throw new Error("http " + resp.status);
+    const data = await resp.json();
+    mergeOpencode(data);
+    setSync("ok");
+    toast("Synced with opencode ✓");
+  } catch (e) {
+    setSync("local");
+    toast("Couldn't reach opencode.json — run via server or Import file");
+  }
+  renderAll();
+}
+function mergeOpencode(data) {
+  if (!data) return;
+  if (data.tasks && Array.isArray(data.tasks)) {
+    for (const t of data.tasks) {
+      const ex = state.tasks.find(x => x.id === t.id);
+      if (ex) {
+        const { sources, updates, review, ...rest } = t;
+        Object.assign(ex, rest);
+        if (!ex.sources) ex.sources = sources || [];
+        if (Array.isArray(updates)) {
+          ex.updates = ex.updates || [];
+          for (const u of updates) if (!ex.updates.some(x => x.id === u.id)) ex.updates.push(u);
+        }
+        if (typeof review !== "undefined") ex.review = review || null;
+      } else {
+        state.tasks.push(t);
+      }
+    }
+  }
+  if (typeof data.review !== "undefined") state.opencodeReview = data.review || null;
+  if (data.workLog && Array.isArray(data.workLog)) {
+    for (const w of data.workLog) if (!state.workLog.find(x => x.id === w.id)) state.workLog.push(w);
+    state.workLog.sort((a,b) => a.date.localeCompare(b.date));
+  }
+  if (data.analytics && data.analytics.totals) state.analytics = data.analytics;
+  if (data.notes && Array.isArray(data.notes)) {
+    for (const n of data.notes) if (!state.notes.find(x => x.id === n.id)) state.notes.push(n);
+  }
+  if (data.links && Array.isArray(data.links)) {
+    state.removedLinks = state.removedLinks || [];
+    for (const l of data.links) {
+      if (!state.links.find(x => x.id === l.id) && !state.removedLinks.includes(l.id)) state.links.push(l);
+    }
+  }
+  save();
+}
+function setSync(mode) {
+  const el = $("#syncStatus");
+  el.classList.remove("ok");
+  $("#syncText").textContent = mode === "ok" ? "opencode synced" : mode === "github" ? "github synced" : mode === "syncing" ? "syncing…" : mode === "team" ? "team synced" : "local";
+  if (mode === "ok" || mode === "github" || mode === "team") el.classList.add("ok");
+}
+
+/* ---------- Team backend sync ---------- */
+function stripMe() {
+  const s = JSON.parse(JSON.stringify(state));
+  delete s.me;
+  return s;
+}
+// Merge a teammate's (or server's) state into ours, preserving local-only edits.
+function mergeRemote(remote) {
+  if (!remote || typeof remote !== "object") return;
+  const rid = new Set((remote.tasks || []).map(t => t.id));
+  const localOnly = state.tasks.filter(t => !rid.has(t.id));
+  const merged = (remote.tasks || []).map(t => {
+    const ex = state.tasks.find(x => x.id === t.id);
+    if (!ex) return t;
+    if (Array.isArray(t.updates)) for (const u of t.updates) if (!(ex.updates || []).some(x => x.id === u.id)) ex.updates.push(u);
+    if (Array.isArray(t.comments)) for (const c of t.comments) if (!(ex.comments || []).some(x => x.id === c.id)) ex.comments.push(c);
+    return ex;
+  });
+  state.tasks = merged.concat(localOnly);
+  for (const k of ["links", "notes", "workLog", "requests", "habits", "meetings", "focusLog"]) {
+    const r = remote[k] || [];
+    const ids = new Set(r.map(x => x.id));
+    state[k] = r.concat((state[k] || []).filter(x => !ids.has(x.id)));
+  }
+  if (remote.analytics) state.analytics = remote.analytics;
+  if (typeof remote.opencodeReview !== "undefined") state.opencodeReview = remote.opencodeReview;
+  if (remote.settings) state.settings = Object.assign({}, state.settings || {}, remote.settings);
+  if (remote.mits && typeof remote.mits === "object" && !Array.isArray(remote.mits)) state.mits = Object.assign({}, state.mits || {}, remote.mits);
+}
+async function pullFromServer() {
+  if (!API_ENABLED) return;
+  try {
+    const r = await fetch(API_BASE + "/api/state", { headers: apiHeaders(), credentials: "include", cache: "no-store" });
+    if (r.status === 401 || r.status === 403) { logout(); return; }
+    if (!r.ok) return;
+    const j = await r.json();
+    if (j.state && Array.isArray(j.state.tasks)) {
+      const serverEmpty = j.state.tasks.length === 0 && (j.version || 0) === 0;
+      if (serverEmpty && state.tasks.length) { apiVersion = j.version || 0; await pushToServer(false); return; }
+      state = normalize(j.state);
+      apiVersion = j.version;
+      if (j.user && j.user.id) { state.me = j.user.id; lockedMe = j.user; }
+      renderAuth();
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      renderAll();
+      setSync("team");
+    }
+  } catch (e) { setSync("local"); }
+}
+async function pushToServer(silent) {
+  if (!API_ENABLED) return;
+  try {
+    const resp = await fetch(API_BASE + "/api/state", {
+      method: "PUT",
+      headers: apiHeaders(),
+      credentials: "include",
+      body: JSON.stringify({ state: stripMe(), version: apiVersion })
+    });
+    if (resp.status === 401 || resp.status === 403) { logout(); return; }
+    const j = await resp.json();
+    if (resp.status === 409 && j.state) {
+      mergeRemote(j.state);
+      apiVersion = j.version;
+      if (j.user && j.user.id) { state.me = j.user.id; lockedMe = j.user; }
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      renderAll();
+      await pushToServer(true); // retry once with the merged state
+      if (!silent) toast("Merged with a teammate's changes");
+    } else if (j.ok) {
+      apiVersion = j.version;
+      setSync("team");
+    } else if (!silent) {
+      toast("Save failed: " + (j.error || "unknown"));
+    }
+  } catch (e) {
+    if (!silent) toast("Offline — changes saved locally, will sync later");
+  }
+}
+
+function importOpencodeFile() {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/json";
+  inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { try { mergeOpencode(JSON.parse(r.result)); toast("Imported opencode.json ✓"); renderAll(); } catch(e){ toast("Invalid JSON"); } };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+
+function renderAll() {
+  renderDashboard();
+  renderWorklog();
+  renderTasks();
+  renderLinks();
+  renderNotes();
+  renderAlerts();
+  renderDashFocus();
+  renderDashMits();
+  renderFocus();
+  renderMePicker();
+  renderKpi();
+}
+
+/* ============================================================
+   MONTHLY KPI TRACKER
+============================================================ */
+const KPI_DEFS = [
+  { id: "kpi1", charter: "Systems & Automation", perspective: "Internal Process",
+    name: "Recurring Personal Process Automation Coverage",
+    short: "Automation", folder: "Automation",
+    def: "Proportion of recurring data collection, consolidation & calculation tasks automated.",
+    weightage: 30,
+    match: ["automation", "mcp", "sync", "agent", "tooling", "script", "builder", "installer"] },
+  { id: "kpi2", charter: "Learning & Building", perspective: "Learning & Growth",
+    name: "Self-Service Tool & Framework Development",
+    short: "Formats & Frameworks", folder: "Formats and Frameworks",
+    def: "Reusable dashboards, tools & frameworks developed, tested and adopted.",
+    weightage: 30,
+    match: ["dashboard", "app", "tracker", "tool", "framework", "productivity", "portal", "profile"] },
+  { id: "kpi3", charter: "Review & Reporting", perspective: "Customer",
+    name: "Cross-Source Reporting & Dashboard Accuracy",
+    short: "Report / Dashboard / Trackers", folder: "Report, Dashboard and trackers",
+    def: "Dashboards & reports delivered on time and without material error.",
+    weightage: 40,
+    match: ["report", "analysis", "kpi", "budget", "gap", "summary", "review", "market", "insight", "forecast", "plan", "survey", "playbook", "strategy", "finance", "income", "reading", "goals"] }
+];
+
+const curMonth = () => new Date().toISOString().slice(0, 7);
+let kpiMonth = null;
+
+function taskMonth(t) {
+  const d = t.due || t.createdAt || "";
+  return d.slice(0, 7);
+}
+function kpiOf(t) {
+  if (t.kpi && KPI_DEFS.some(k => k.id === t.kpi)) return t.kpi;
+  const hay = ((t.title || "") + " " + (t.project || "") + " " + (t.tags || []).join(" ")).toLowerCase();
+  for (const k of KPI_DEFS) if (k.match.some(w => hay.includes(w))) return k.id;
+  return null;
+}
+function monthsInTasks() {
+  const set = new Set();
+  for (const t of state.tasks) { const m = taskMonth(t); if (m) set.add(m); }
+  set.add(curMonth());
+  return Array.from(set).sort().reverse();
+}
+function monthLabel(m) {
+  const [y, mo] = m.split("-");
+  return new Date(Number(y), Number(mo) - 1, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+}
+function kpiTarget(month, kpiId) {
+  const t = (state.kpi && state.kpi.targets) ? state.kpi.targets[month] : null;
+  if (t && t[kpiId] != null) return t[kpiId];
+  return 3;
+}
+function kpiTasksFor(month, kpiId) {
+  return state.tasks.filter(t => taskMonth(t) === month && kpiOf(t) === kpiId);
+}
+function kpiStatus(a) {
+  if (a >= 85) return { icon: "🟢", label: "Excellent" };
+  if (a >= 75) return { icon: "🟡", label: "Acceptable" };
+  return { icon: "🔴", label: "Below" };
+}
+
+function kpiHttpUrl(value) {
+  try { const url = new URL(String(value || "").trim()); return ["http:", "https:"].includes(url.protocol) ? url.href : ""; }
+  catch (_) { return ""; }
+}
+function kpiEvidence(t) {
+  const links = [];
+  const addLink = (value, label) => {
+    const url = kpiHttpUrl(value);
+    if (url && !links.some(s => s.url === url)) links.push({ url, label: label || "Open online evidence" });
+  };
+  addLink(t.evidenceUrl, "Open online evidence");
+  addLink(t.evidence, "Open online evidence");
+  for (const s of (t.sources || [])) addLink(s.url, s.label);
+  const localSource = (t.sources || []).find(s => /^(?:[a-z]:[\\/]|\\\\|\/)/i.test(s.path || ""));
+  const path = String(t.evidencePath || (localSource && localSource.path) || (/^(?:[a-z]:[\\/]|\\\\|\/)/i.test(t.evidence || "") ? t.evidence : "")).trim();
+  return { links, path };
+}
+function kpiEvidenceText(t) {
+  const e = kpiEvidence(t);
+  return [...e.links.map(s => s.url), e.path].filter(Boolean).join(" | ") || t.evidence || "";
+}
+
+function renderKpi() {
+  if (!kpiMonth) kpiMonth = curMonth();
+  renderKpiMonthSel();
+  renderKpiTable();
+  renderKpiMonths();
+}
+function renderKpiMonthSel() {
+  const sel = $("#kpiMonth");
+  if (!sel) return;
+  sel.innerHTML = monthsInTasks().map(m => `<option value="${m}" ${m === kpiMonth ? "selected" : ""}>${monthLabel(m)}</option>`).join("");
+  sel.onchange = () => { kpiMonth = sel.value; renderKpiTable(); renderKpiMonths(); };
+}
+function renderKpiTable() {
+  const m = kpiMonth;
+  const rows = KPI_DEFS.map(k => {
+    const tasks = kpiTasksFor(m, k.id).slice().sort((a, b) => (a.due || "").localeCompare(b.due || ""));
+    const target = kpiTarget(m, k.id);
+    const actual = tasks.length;
+    const withEvd = tasks.filter(t => { const e = kpiEvidence(t); return e.path || e.links.length || (t.evidence && t.evidence.trim()); }).length;
+    const ach = target > 0 ? actual / target * 100 : 0;
+    const score = ach / 100 * k.weightage;
+    const st = kpiStatus(ach);
+    const evidence = tasks.map(t => {
+      const ev = (t.evidence && t.evidence.trim())
+        ? `<span class="kpi-evd-file">📎 ${esc(t.evidence.trim())}</span>`
+        : `<span class="kpi-evd-file missing">⚠ no file</span>`;
+      const e = kpiEvidence(t);
+      const links = e.links.map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.label)} ↗</a><br><span class="small">${esc(s.url)}</span>`).join("<br>");
+      const local = e.path ? `<span class="muted small">Local file location</span><code class="kpi-evd-path">${esc(e.path)}</code><button class="btn ghost small kpi-copy-path" data-id="${esc(t.id)}">Copy path</button>` : "";
+      return `<div class="kpi-evd"><span class="kpi-evd-title">${esc(t.title)}</span>${ev}${links ? `<span class="kpi-evd-links">${links}</span>` : ""}${local}${!e.path && !e.links.length ? '<span class="muted small">Location not recorded yet</span>' : ""}</div>`;
+    }).join("");
+    return `<div class="kpi-row">
+      <div class="kpi-cell kpi-name">
+        <div class="kpi-charter">${esc(k.charter)} · ${esc(k.perspective)}</div>
+        <div class="kpi-title">${esc(k.name)}</div>
+        <div class="kpi-def">${esc(k.def)} · weight ${k.weightage}% · folder "${esc(k.folder)}"</div>
+      </div>
+      <div class="kpi-cell kpi-num"><label>Target (N)</label><input class="kpi-tgt" type="number" min="0" value="${target}" data-kpi="${k.id}" title="Set by supervisor"></div>
+      <div class="kpi-cell kpi-num"><label>Actual (O)</label><div class="kpi-big">${actual}</div></div>
+      <div class="kpi-cell kpi-num"><label>Achievement</label><div class="kpi-big">${ach.toFixed(0)}%</div></div>
+      <div class="kpi-cell kpi-num"><label>Score</label><div class="kpi-big">${score.toFixed(1)}%</div></div>
+      <div class="kpi-cell kpi-num"><label>Status</label><div class="kpi-big">${st.icon}</div><span class="muted small">${st.label}</span></div>
+      <div class="kpi-cell kpi-evd"><label>Evidence (Z) — ${actual} work${actual === 1 ? "" : "s"} · ${withEvd} file${withEvd === 1 ? "" : "s"}</label>${evidence || '<span class="muted small">No tasks this month</span>'}</div>
+    </div>`;
+  }).join("");
+  const totalScore = KPI_DEFS.reduce((sum, k) => {
+    const actual = kpiTasksFor(m, k.id).length;
+    const target = kpiTarget(m, k.id);
+    return sum + (target > 0 ? actual / target * 100 : 0) / 100 * k.weightage;
+  }, 0);
+  const ts = kpiStatus(totalScore);
+  $("#kpiTable").innerHTML = `<div class="kpi-head">
+    <div class="kpi-cell">KPI (${monthLabel(m)})</div><div class="kpi-cell">Target (N)</div><div class="kpi-cell">Actual (O)</div><div class="kpi-cell">Achievement</div><div class="kpi-cell">Score</div><div class="kpi-cell">Status</div><div class="kpi-cell">Evidence (Z)</div>
+  </div>${rows}<div class="kpi-total"><span>Individual Score</span><b>${totalScore.toFixed(1)}%</b><span>${ts.icon} ${ts.label}</span></div>`;
+
+  $$("#kpiTable .kpi-copy-path").forEach(btn => {
+    btn.onclick = async () => {
+      const t = state.tasks.find(x => x.id === btn.dataset.id);
+      if (!t) return;
+      try { await navigator.clipboard.writeText(kpiEvidence(t).path); toast("File location copied — paste into File Explorer"); }
+      catch (_) { toast("Copy failed — select and copy the displayed path"); }
+    };
+  });
+
+  $$("#kpiTable .kpi-tgt").forEach(inp => {
+    inp.onchange = () => {
+      const kpiId = inp.dataset.kpi;
+      const v = parseInt(inp.value, 10);
+      if (isNaN(v) || v < 0) { inp.value = kpiTarget(m, kpiId); return; }
+      state.kpi.targets[m] = state.kpi.targets[m] || {};
+      state.kpi.targets[m][kpiId] = v;
+      save();
+      renderKpiTable();
+    };
+  });
+}
+function renderKpiMonths() {
+  const html = monthsInTasks().map(m => {
+    const tasks = state.tasks.filter(t => taskMonth(t) === m).slice().sort((a, b) => (a.due || "").localeCompare(b.due || ""));
+    const done = tasks.filter(t => t.status === "done").length;
+    const list = tasks.map(t => `<div class="kpi-task ${t.status === "done" ? "is-done" : ""}">
+      <span>${t.status === "done" ? "✅" : t.status === "progress" ? "🔄" : "⬜"}</span>
+      <span class="kpi-task-title">${esc(t.title)}</span>
+      <span class="kpi-task-proj muted small">${esc(t.project || "")}</span>
+      <select class="kpi-task-sel" data-id="${esc(t.id)}" title="Map to KPI folder"><option value="">— map to KPI —</option>${KPI_DEFS.map(k => `<option value="${k.id}" ${kpiOf(t) === k.id ? "selected" : ""}>${esc(k.short)}</option>`).join("")}</select>
+      <div class="kpi-task-evidence">
+        <label>Evidence file name<input class="kpi-task-evd" data-id="${esc(t.id)}" data-field="evidence" placeholder="01_Report.xlsx" value="${esc(t.evidence || "")}"></label>
+        <label>Online evidence URL<input class="kpi-task-evd" type="url" data-id="${esc(t.id)}" data-field="evidenceUrl" placeholder="https://example.com/… (paste after upload)" value="${esc(t.evidenceUrl || "")}"></label>
+        <label>Local file location<input class="kpi-task-evd" data-id="${esc(t.id)}" data-field="evidencePath" placeholder="Full file path on your PC" value="${esc(kpiEvidence(t).path)}"></label>
+      </div>
+    </div>`).join("");
+    return `<div class="kpi-month"><div class="kpi-month-head"><b>${monthLabel(m)}</b><span class="muted small">${tasks.length} tasks · ${done} done</span></div>${list}</div>`;
+  }).join("");
+  $("#kpiMonths").innerHTML = html;
+  $$("#kpiMonths .kpi-task-sel").forEach(sel => {
+    sel.onchange = () => {
+      const t = state.tasks.find(x => x.id === sel.dataset.id);
+      if (!t) return;
+      t.kpi = sel.value || null;
+      save();
+      renderKpiTable();
+      renderKpiMonths();
+    };
+  });
+  $$("#kpiMonths .kpi-task-evd").forEach(inp => {
+    inp.onchange = () => {
+      const t = state.tasks.find(x => x.id === inp.dataset.id);
+      if (!t) return;
+      const field = inp.dataset.field;
+      if (!["evidence", "evidenceUrl", "evidencePath"].includes(field)) return;
+      const value = inp.value.trim();
+      if (field === "evidenceUrl" && value && !kpiHttpUrl(value)) { toast("Enter a full http:// or https:// share link"); inp.value = t.evidenceUrl || ""; return; }
+      t[field] = value || null;
+      save();
+      renderKpiTable();
+    };
+  });
+}
+function kpiCopy() {
+  const m = kpiMonth;
+  const cols = ["KPI Name", "Target (N)", "Actual (O)", "Achievement %", "Score %", "KPI Status", "Evidence (Z)"];
+  const lines = [cols.join("\t")];
+  for (const k of KPI_DEFS) {
+    const tasks = kpiTasksFor(m, k.id);
+    const target = kpiTarget(m, k.id);
+    const ach = target > 0 ? tasks.length / target * 100 : 0;
+    const score = ach / 100 * k.weightage;
+    const st = kpiStatus(ach);
+    const evd = tasks.map(t => { const value = kpiEvidenceText(t); return value ? `${t.title}: ${value}` : ""; }).filter(Boolean).join(" ; ").replace(/[\t\r\n]+/g, " ");
+    lines.push([k.name, target, tasks.length, ach.toFixed(2), score.toFixed(2), st.label, evd].join("\t"));
+  }
+  navigator.clipboard.writeText(lines.join("\n")).then(() => toast("KPI tracker copied — paste into Google Sheets")).catch(() => toast("Copy failed"));
+}
+
+/* ============================================================
+   FOCUS & PLAN — pomodoro, MITs, habits, meetings
+============================================================ */
+const todayStr = () => { const d = new Date(); return d.toISOString().slice(0, 10); };
+const dstr = d => d.toISOString().slice(0, 10);
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+
+/* ---------- Pomodoro ---------- */
+let pomo = { running: false, mode: "work", remaining: 25 * 60, total: 25 * 60, interval: null };
+function focusMinutes(mode) { const v = mode === "work" ? +$("#focusWorkMin").value : +$("#focusBreakMin").value; return (v > 0 ? v : (mode === "work" ? 25 : 5)); }
+function pomoRender() {
+  const m = Math.floor(pomo.remaining / 60), s = pomo.remaining % 60;
+  $("#pomoTime").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+  $("#pomoMode").textContent = pomo.mode === "work" ? "Focus" : "Break";
+  $("#pomoStart").textContent = pomo.running ? "⏸ Pause" : "▶ Start";
+  $("#pomoRing").style.borderColor = pomo.mode === "work" ? "var(--accent)" : "var(--green)";
+  renderFocusToday();
+}
+function pomoTick() {
+  if (pomo.remaining <= 0) { pomoComplete(); return; }
+  pomo.remaining--;
+  pomoRender();
+}
+function pomoComplete() {
+  clearInterval(pomo.interval); pomo.running = false;
+  const wasWork = pomo.mode === "work";
+  if (wasWork) logFocusSession(Math.round(pomo.total / 60), $("#focusLabel").value.trim());
+  if (wasWork && state.settings.notifyBrowser !== false) notify("Pomodoro complete 🍅", "Great work — take a break!");
+  const next = wasWork ? "break" : "work";
+  pomo.mode = next; pomo.total = focusMinutes(next) * 60; pomo.remaining = pomo.total;
+  pomoRender();
+  toast(wasWork ? "Focus session logged ✓" : "Break over — back to work!");
+}
+function logFocusSession(minutes, label) {
+  const today = todayStr();
+  state.focusLog.push({ id: uid(), date: today, minutes, label: label || "Deep work", startedAt: new Date().toISOString() });
+  state.workLog.push({ id: uid(), date: today, summary: (label ? label + " — " : "") + "Pomodoro focus session (" + minutes + " min)", hours: +(minutes / 60).toFixed(2), project: "Deep Work" });
+  save();
+  renderWorklog();
+  renderDashFocus();
+}
+function focusTodayMinutes() { return (state.focusLog || []).filter(f => f.date === todayStr()).reduce((a, b) => a + (b.minutes || 0), 0); }
+function renderFocusToday() {
+  const el = $("#focusToday");
+  if (el) el.textContent = `Today: ${focusTodayMinutes()} min focused · ${(state.focusLog || []).length} total sessions`;
+}
+function pomoStartPause() {
+  if (pomo.running) { clearInterval(pomo.interval); pomo.running = false; pomoRender(); return; }
+  if (pomo.remaining <= 0) pomo.remaining = pomo.total;
+  pomo.running = true;
+  pomo.interval = setInterval(pomoTick, 1000);
+  pomoRender();
+}
+function pomoReset() { clearInterval(pomo.interval); pomo.running = false; pomo.total = focusMinutes(pomo.mode) * 60; pomo.remaining = pomo.total; pomoRender(); }
+function pomoSwitchMode(mode) { clearInterval(pomo.interval); pomo.running = false; pomo.mode = mode; pomo.total = focusMinutes(mode) * 60; pomo.remaining = pomo.total; pomoRender(); }
+
+/* ---------- MITs (Top 3) ---------- */
+function getMits() { return state.mits[todayStr()] || []; }
+function setMits(arr) { state.mits[todayStr()] = arr.slice(0, 3); save(); }
+function renderMits() {
+  const mits = getMits();
+  let html = "";
+  for (let i = 0; i < 3; i++) html += `<div class="mit-row"><div class="mit-rank">${i + 1}</div><input data-mit="${i}" value="${esc(mits[i] || "")}" placeholder="MIT #${i + 1}…"></div>`;
+  $("#mitList").innerHTML = html;
+  $$("#mitList input").forEach(inp => {
+    inp.oninput = () => { const arr = getMits(); arr[+inp.dataset.mit] = inp.value.trim(); while (arr.length > 3) arr.pop(); setMits(arr); renderDashMits(); };
+  });
+  renderDashMits();
+}
+function suggestMits() {
+  const open = state.tasks.filter(t => t.status !== "done").sort((a, b) => (a.priority === "high" ? 0 : 1) - (b.priority === "high" ? 0 : 1));
+  setMits(open.slice(0, 3).map(t => t.title));
+  renderMits();
+  toast("Top 3 suggested from open tasks");
+}
+
+/* ---------- Habits & streaks ---------- */
+function habitStreak(h) {
+  const log = (h.log || []).slice();
+  let d = new Date();
+  const today = dstr(d);
+  if (!log.includes(today)) d = addDays(d, -1);
+  let streak = 0;
+  while (log.includes(dstr(d))) { streak++; d = addDays(d, -1); }
+  return streak;
+}
+function habitDoneToday(h) { return (h.log || []).includes(todayStr()); }
+function renderHabits() {
+  const habits = state.habits || [];
+  if (!habits.length) { $("#habitList").innerHTML = '<div class="empty small">No habits yet. Add one like "Exercise" or "Read 20 min".</div>'; return; }
+  $("#habitList").innerHTML = habits.map(h => `
+    <div class="habit-row">
+      <div class="habit-check ${habitDoneToday(h) ? "done" : ""}" data-habit="${esc(h.id)}">${habitDoneToday(h) ? "✓" : ""}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${esc(h.name)}</div><div class="small muted">${(h.log || []).length} days total</div></div>
+      <div class="habit-streak">🔥 ${habitStreak(h)}d</div>
+      <button class="btn danger small" data-habit-del="${esc(h.id)}">✕</button>
+    </div>`).join("");
+  $$("#habitList [data-habit]").forEach(el => el.onclick = () => {
+    const h = state.habits.find(x => x.id === el.dataset.habit);
+    const t = todayStr(); const i = h.log.indexOf(t);
+    if (i >= 0) h.log.splice(i, 1); else h.log.push(t);
+    save(); renderHabits(); renderDashFocus();
+  });
+  $$("#habitList [data-habit-del]").forEach(el => el.onclick = () => { state.habits = state.habits.filter(x => x.id !== el.dataset.habitDel); save(); renderHabits(); renderDashFocus(); });
+}
+function addHabit() {
+  const name = prompt("Habit name:", "");
+  if (!name || !name.trim()) return;
+  state.habits.push({ id: uid(), name: name.trim(), log: [] });
+  save(); renderHabits(); renderDashFocus();
+}
+
+/* ---------- Meetings & calendar ---------- */
+function renderMeetings() {
+  const ms = (state.meetings || []).slice().sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
+  if (!ms.length) { $("#meetingList").innerHTML = '<div class="empty small">No meetings. Add one to track your day.</div>'; return; }
+  $("#meetingList").innerHTML = ms.map(m => {
+    const past = m.date < todayStr();
+    return `<div class="meeting-item" style="${past ? "opacity:.55" : ""}">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:13.5px">${esc(m.title)}</div>
+          <div class="m-when">${m.date} ${esc(m.time || "")}${m.duration ? " · " + m.duration + "m" : ""}</div>
+          ${m.link ? `<a href="${esc(m.link)}" target="_blank" rel="noopener">Join ↗</a> ` : ""}
+          ${m.notes ? `<div class="small muted">${esc(m.notes)}</div>` : ""}
+        </div>
+        <div class="row" style="gap:6px;flex-wrap:nowrap">
+          <button class="btn ghost small" data-mcal="${esc(m.id)}">Calendar</button>
+          <button class="btn ghost small" data-mtask="${esc(m.id)}">Task</button>
+          <button class="btn danger small" data-mdel="${esc(m.id)}">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  $$("#meetingList [data-mdel]").forEach(el => el.onclick = () => { state.meetings = state.meetings.filter(x => x.id !== el.dataset.mdel); save(); renderMeetings(); });
+  $$("#meetingList [data-mcal]").forEach(el => el.onclick = () => { const m = state.meetings.find(x => x.id === el.dataset.mcal); if (m) addToGoogleCalendar(m); });
+  $$("#meetingList [data-mtask]").forEach(el => el.onclick = () => { const m = state.meetings.find(x => x.id === el.dataset.mtask); if (m) requestTaskFromMeeting(m); });
+}
+function addMeeting() {
+  $("#modal").innerHTML = `
+    <h3>New meeting</h3>
+    <div class="field"><label>Title *</label><input id="m-title" placeholder="e.g. Weekly review sync"></div>
+    <div class="field"><label>Date *</label><input id="m-date" type="date" value="${todayStr()}"></div>
+    <div class="field"><label>Time</label><input id="m-time" type="time" value="09:00"></div>
+    <div class="field"><label>Duration (min)</label><input id="m-dur" type="number" value="30"></div>
+    <div class="field"><label>Meet / Zoom link</label><input id="m-link" placeholder="https://meet.google.com/..."></div>
+    <div class="field"><label>Notes</label><textarea id="m-notes"></textarea></div>
+    <div class="modal-actions"><button class="btn ghost" id="m-cancel">Cancel</button><button class="btn" id="m-save">Save</button></div>`;
+  openModal();
+  $("#m-cancel").onclick = closeModal;
+  $("#m-save").onclick = () => {
+    const title = $("#m-title").value.trim(), date = $("#m-date").value;
+    if (!title || !date) { toast("Title and date required"); return; }
+    state.meetings.push({ id: uid(), title, date, time: $("#m-time").value, duration: +($("#m-dur").value || 30), link: $("#m-link").value.trim(), notes: $("#m-notes").value.trim(), createdAt: new Date().toISOString() });
+    save(); closeModal(); renderMeetings(); toast("Meeting added");
+  };
+}
+function addToGoogleCalendar(m) {
+  const start = new Date(m.date + "T" + (m.time || "09:00"));
+  const end = new Date(start.getTime() + (m.duration || 30) * 60000);
+  const fmt = d => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.title)}&dates=${fmt(start)}/${fmt(end)}${m.link ? `&location=${encodeURIComponent(m.link)}` : ""}${m.notes ? `&details=${encodeURIComponent(m.notes)}` : ""}`;
+  window.open(url, "_blank");
+}
+function requestTaskFromMeeting(m) {
+  openAddTask(m.title, "From meeting: " + m.title + " (" + m.date + (m.time ? " " + m.time : "") + ")");
+}
+
+/* ---------- Deadline alerts & notifications ---------- */
+function deadlineAlerts() {
+  const alerts = [];
+  const today = todayStr();
+  const soon = dstr(addDays(new Date(), 3));
+  for (const t of state.tasks) {
+    if (!t.due || t.status === "done") continue;
+    if (t.due < today) alerts.push({ kind: "overdue", title: t.title, msg: "Overdue — was due " + t.due });
+    else if (t.due === today) alerts.push({ kind: "today", title: t.title, msg: "Due today" });
+    else if (t.due <= soon) alerts.push({ kind: "soon", title: t.title, msg: "Due " + t.due });
+  }
+  return alerts;
+}
+function renderAlerts() {
+  const alerts = deadlineAlerts();
+  const el = $("#alerts");
+  if (!el) return;
+  if (!alerts.length) { el.classList.remove("show"); el.innerHTML = ""; }
+  else {
+    el.classList.add("show");
+    el.innerHTML = alerts.map(a => `<div class="alert ${a.kind}"><span>${a.kind === "overdue" ? "⚠️" : a.kind === "today" ? "⏰" : "📅"}</span><div><span class="a-title">${esc(a.title)}</span> — ${esc(a.msg)}</div></div>`).join("");
+  }
+  renderBell();
+}
+function renderBell() {
+  const alerts = deadlineAlerts();
+  const n = alerts.length;
+  const c = $("#bellCount"); if (c) { c.style.display = n ? "" : "none"; c.textContent = n; }
+  const d = $("#bellDrop");
+  if (!d) return;
+  d.innerHTML = n ? alerts.map(a => `<div class="search-res"><div class="sr-type">${a.kind}</div><div class="sr-title">${esc(a.title)}</div><div class="sr-sub">${esc(a.msg)}</div></div>`).join("")
+    : '<div class="small muted" style="padding:10px 14px">No upcoming deadlines. 👍</div>';
+}
+function notify(title, body) {
+  try {
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") new Notification(title, { body });
+    else if (Notification.permission !== "denied") Notification.requestPermission();
+  } catch (e) {}
+}
+function checkDeadlineNotifications() {
+  if (state.settings.notifyBrowser === false) return;
+  const today = todayStr();
+  const overdue = state.tasks.filter(t => t.due && t.status !== "done" && t.due < today);
+  const dueToday = state.tasks.filter(t => t.due === today && t.status !== "done");
+  if (overdue.length) notify("Overdue tasks ⚠️", overdue.map(t => t.title).join(", "));
+  if (dueToday.length) notify("Tasks due today ⏰", dueToday.map(t => t.title).join(", "));
+}
+
+/* ---------- Global search ---------- */
+function globalSearch(q) {
+  q = (q || "").toLowerCase().trim();
+  const box = $("#searchResults");
+  if (!q) { box.classList.remove("show"); box.innerHTML = ""; return; }
+  const res = [];
+  for (const t of visibleTasks()) if ((t.title + " " + (t.desc || "") + " " + (t.project || "") + " " + (t.tags || []).join(" ")).toLowerCase().includes(q)) res.push({ type: "task", title: t.title, sub: (t.project || "") + " · " + (STATUS[t.status] || t.status), goto: () => showView("tasks") });
+  for (const n of state.notes) if ((n.title + " " + (n.content || "").replace(/<[^>]+>/g, " ")).toLowerCase().includes(q)) res.push({ type: "note · " + n.type, title: n.title, sub: "", goto: () => { showView("notes"); noteType = n.type; renderNoteTabs(); activeNoteId = n.id; renderNoteList(); renderNoteMain(); } });
+  for (const l of state.links) if ((l.name + " " + (l.url || "")).toLowerCase().includes(q)) res.push({ type: "link", title: l.name, sub: l.url, goto: () => window.open(l.url, "_blank") });
+  for (const m of (state.meetings || [])) if ((m.title + " " + (m.notes || "")).toLowerCase().includes(q)) res.push({ type: "meeting", title: m.title, sub: m.date + " " + (m.time || ""), goto: () => showView("focus") });
+  for (const h of (state.habits || [])) if (h.name.toLowerCase().includes(q)) res.push({ type: "habit", title: h.name, sub: "🔥 " + habitStreak(h) + "d streak", goto: () => showView("focus") });
+  getMits().forEach((m, i) => { if ((m || "").toLowerCase().includes(q)) res.push({ type: "MIT", title: m, sub: "today's top 3", goto: () => showView("focus") }); });
+  box.innerHTML = res.length ? res.slice(0, 30).map((r, i) => `<div class="search-res" data-si="${i}"><div class="sr-type">${r.type}</div><div class="sr-title">${esc(r.title)}</div>${r.sub ? `<div class="sr-sub">${esc(r.sub)}</div>` : ""}</div>`).join("") : '<div class="small muted" style="padding:10px 14px">No results.</div>';
+  box.classList.add("show");
+  $$("#searchResults .search-res").forEach(el => el.onclick = () => { const r = res[+el.dataset.si]; box.classList.remove("show"); $("#globalSearch").value = ""; if (r) r.goto(); });
+}
+
+/* ---------- Weekly review ---------- */
+function buildWeeklyReview() {
+  const now = new Date();
+  const end = todayStr();
+  const start = dstr(addDays(now, -7));
+  const L = [];
+  L.push("# Weekly Review — " + start + " to " + end); L.push("");
+  const wl = (state.workLog || []).filter(w => w.date >= start && w.date <= end);
+  const focus = (state.focusLog || []).filter(f => f.date >= start && f.date <= end);
+  const doneTasks = state.tasks.filter(t => t.status === "done");
+  const openTasks = state.tasks.filter(t => t.status !== "done");
+  const meetings = (state.meetings || []).filter(m => m.date >= start && m.date <= end);
+  const habits = state.habits || [];
+  const focusMin = focus.reduce((a, b) => a + (b.minutes || 0), 0);
+  const workHours = wl.reduce((a, b) => a + (b.hours || 0), 0);
+  L.push("## Highlights");
+  L.push("- Work logged: " + wl.length + " entries, ~" + workHours.toFixed(1) + " hours");
+  L.push("- Deep-work focus: " + focusMin + " min (" + (focusMin / 60).toFixed(1) + "h) across " + focus.length + " sessions");
+  L.push("- Tasks completed: " + doneTasks.length + " · Open: " + openTasks.length);
+  L.push("- Meetings: " + meetings.length);
+  if (habits.length) L.push("- Habit consistency: " + habits.map(h => h.name + " " + habitStreak(h) + "d").join(", "));
+  L.push("");
+  if (wl.length) { L.push("## Work log"); wl.slice().reverse().forEach(w => L.push("- [" + w.date + "] " + w.summary + " (" + (w.hours || 0) + "h)")); L.push(""); }
+  if (focus.length) { L.push("## Focus sessions"); focus.slice().reverse().forEach(f => L.push("- [" + f.date + "] " + (f.label || "Deep work") + " — " + (f.minutes || 0) + " min")); L.push(""); }
+  if (doneTasks.length) { L.push("## Completed tasks"); doneTasks.forEach(t => L.push("- [x] " + t.title)); L.push(""); }
+  if (openTasks.length) { L.push("## Still open"); openTasks.forEach(t => L.push("- [ ] " + t.title + (t.due ? " (due " + t.due + ")" : ""))); L.push(""); }
+  if (meetings.length) { L.push("## Meetings"); meetings.forEach(m => L.push("- [" + m.date + (m.time ? " " + m.time : "") + "] " + m.title)); L.push(""); }
+  L.push("## Next week focus");
+  L.push(getMits().filter(Boolean).map(m => "- " + m).join("\n") || "- (set your Top 3 MITs)");
+  return L.join("\n");
+}
+function renderWeeklyReview() {
+  $("#reviewCard").style.display = "block";
+  $("#reviewOut").textContent = buildWeeklyReview();
+  showView("focus");
+}
+function reviewEmail() {
+  const body = buildWeeklyReview();
+  const subject = "Weekly Review — " + todayStr();
+  fetch("/api/email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ subject, body }) })
+    .then(r => r.json()).then(j => { toast(j.ok ? "Email queued ✓" : (j.error || "Email not configured — opened draft")); if (!j.ok) mailtoDraft(subject, body); })
+    .catch(() => mailtoDraft(subject, body));
+}
+function mailtoDraft(subject, body) {
+  window.location.href = "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  toast("Opened email draft (SMTP not configured)");
+}
+
+/* ---------- Export, print & backup ---------- */
+function downloadText(name, text, type) {
+  const blob = new Blob([text], { type: type || "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  URL.revokeObjectURL(a.href);
+  toast("Downloaded " + name);
+}
+function exportTasksCSV() {
+  const rows = [["Title", "Status", "Priority", "Project", "Due", "Tags", "Source"]];
+  state.tasks.forEach(t => rows.push([t.title, t.status, t.priority || "", t.project || "", t.due || "", (t.tags || []).join(" "), t.source || ""]));
+  downloadText("tasks.csv", rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv");
+}
+function exportSheetCSV(note) {
+  let data; try { data = JSON.parse(note.content || "{}"); } catch (e) { data = { rows: 0, cols: 0, cells: {} }; }
+  const rows = [];
+  for (let r = 0; r < (data.rows || 0); r++) { const row = []; for (let c = 0; c < (data.cols || 0); c++) row.push(data.cells[r + "," + c] || ""); rows.push(row.map(x => '"' + String(x).replace(/"/g, '""') + '"').join(",")); }
+  downloadText((note.title || "sheet").replace(/[^\w\-]+/g, "_") + ".csv", rows.join("\n"), "text/csv");
+}
+function printHTML(title, html) {
+  let area = $("#printArea");
+  if (!area) { area = document.createElement("div"); area.id = "printArea"; area.className = "print-area"; document.body.appendChild(area); }
+  area.innerHTML = '<div class="ph">' + esc(title) + '</div>' + html;
+  window.print();
+}
+function backupNow(silent) {
+  if (READ_ONLY) return;
+  if (!silent) downloadText("abir-prod-backup-" + todayStr() + ".json", JSON.stringify(state, null, 2), "application/json");
+  fetch("/api/backup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(state) })
+    .then(r => r.json()).then(j => { if (!silent && j.ok) toast("Backed up locally + synced to Drive ✓"); })
+    .catch(() => {});
+}
+async function saveToGitHub(silent) {
+  if (API_ENABLED) { await pushToServer(silent); return; }
+  if (READ_ONLY) { if (!silent) toast("Read-only view — nothing to save"); return; }
+  const btn = $("#saveGithubBtn");
+  const orig = btn ? btn.innerHTML : "";
+  if (btn && !silent) { btn.disabled = true; btn.innerHTML = "⏳ Saving…"; }
+  try {
+    const resp = await fetch("/api/github-save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ state })
+    });
+    const j = await resp.json();
+    if (j.ok) {
+      if (!silent) toast(j.pushed ? "Saved to GitHub ✓ (" + (j.commit || "").slice(0, 7) + ")" : "No changes to save");
+      else if (j.pushed) setSync("github");
+    } else if (!silent) {
+      toast("Save failed: " + (j.error || "unknown"));
+    }
+  } catch (e) {
+    if (!silent) toast("Save failed — is the app running via bun server.js?");
+  } finally {
+    if (btn && !silent) { btn.disabled = false; btn.innerHTML = orig; }
+  }
+}
+function restoreBackup() {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/json";
+  inp.onchange = () => { const f = inp.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const s = JSON.parse(r.result); if (!s.tasks) throw 0; state = normalize(s); save(); renderAll(); toast("Backup restored ✓"); } catch (e) { toast("Invalid backup file"); } }; r.readAsText(f); };
+  inp.click();
+}
+
+/* ---------- Server health / offline detection & auto-restore ---------- */
+function showOfflineBanner() {
+  if ($("#offlineBanner")) return;
+  const b = document.createElement("div");
+  b.id = "offlineBanner";
+  b.className = "ro-banner";
+  b.style.borderColor = "var(--red)";
+  b.innerHTML = "⚠️ <b>Server not detected</b> — Save to GitHub, sync & backup are off. This demo runs fully offline from <code>index.html</code>; everything still saves to your browser.";
+  const app = $(".app"); if (app) app.prepend(b);
+}
+function hideOfflineBanner() { const b = $("#offlineBanner"); if (b) b.remove(); }
+async function checkServer() {
+  if (READ_ONLY) return;
+  try {
+    const r = await fetch("/api/health", { cache: "no-store" });
+    if (r.ok) { hideOfflineBanner(); return; }
+    throw 0;
+  } catch (e) { showOfflineBanner(); }
+}
+async function restoreFromServerIfEmpty() {
+  if (READ_ONLY) return;
+  try {
+    if (localStorage.getItem(LS_KEY)) return;
+    const r = await fetch("/api/backup/download", { cache: "no-store" });
+    if (!r.ok) return;
+    const s = await r.json();
+    if (s && s.tasks) { state = normalize(s); save(); toast("Restored your data from server backup ✓"); renderAll(); }
+  } catch (e) {}
+}
+
+/* ---------- Dashboard focus widgets ---------- */
+function renderDashFocus() {
+  const el = $("#dashFocus");
+  if (!el) return;
+  const focusMin = focusTodayMinutes();
+  const habits = state.habits || [];
+  const bestStreak = habits.reduce((a, h) => Math.max(a, habitStreak(h)), 0);
+  const consistency = habits.length ? Math.round(habits.reduce((a, h) => a + (h.log || []).length, 0) / Math.max(1, habits.length * 30) * 100) : 0;
+  const mits = getMits().filter(Boolean);
+  el.innerHTML = `
+    <div class="mini"><div class="mv">${focusMin}<small style="font-size:12px">m</small></div><div class="ml">Deep work today</div></div>
+    <div class="mini"><div class="mv">${bestStreak}<small style="font-size:12px">d</small></div><div class="ml">Best habit streak</div></div>
+    <div class="mini"><div class="mv">${consistency}%</div><div class="ml">Habit consistency</div></div>
+    <div class="mini"><div class="mv">${mits.length}/3</div><div class="ml">MITs set today</div></div>`;
+}
+function renderDashMits() {
+  const el = $("#dashMits");
+  if (!el) return;
+  const mits = getMits().filter(Boolean);
+  if (!mits.length) { el.innerHTML = ""; return; }
+  el.innerHTML = '<h3 style="margin:0 0 8px">🎯 Today\'s top 3</h3>' + mits.map((m, i) => `<div class="mit-row" style="margin-bottom:4px"><div class="mit-rank">${i + 1}</div><div style="flex:1;padding:8px 0">${esc(m)}</div></div>`).join("");
+}
+function renderFocus() {
+  pomoRender();
+  renderMits();
+  renderHabits();
+  renderMeetings();
+}
+
+/* ---------- Export menu ---------- */
+function renderMenu() {
+  const write = READ_ONLY ? "" : `
+    <button id="expBackup">💾 Backup all data (JSON)</button>
+    <button id="expRestore">📥 Restore from backup</button>`;
+  const autoOn = state.settings.autoPushGithub !== false;
+  $("#menuDrop").innerHTML = `
+    <button id="expTasks">📊 Export tasks (CSV)</button>
+    ${write}
+    <div class="sep"></div>
+    <button id="autoGh">🔄 Auto-sync to GitHub: ${autoOn ? "ON" : "OFF"}</button>
+    <button id="expDash">🖨 Print dashboard / PDF</button>
+    <button id="expReview">📄 Weekly review</button>`;
+  $("#expTasks").onclick = exportTasksCSV;
+  if (!READ_ONLY) {
+    $("#expBackup").onclick = backupNow; $("#expRestore").onclick = restoreBackup;
+    $("#autoGh").onclick = () => { state.settings.autoPushGithub = !autoOn; save(); renderMenu(); toast(state.settings.autoPushGithub === false ? "Auto-sync to GitHub OFF" : "Auto-sync to GitHub ON"); };
+  }
+  $("#expDash").onclick = () => printHTML("Dashboard", $("#view-dashboard").innerHTML);
+  $("#expReview").onclick = renderWeeklyReview;
+}
+
+function applyReadOnly() {
+  if (!READ_ONLY) return;
+  document.body.classList.add("readonly");
+  const banner = document.createElement("div");
+  banner.className = "ro-banner";
+  banner.innerHTML = "🔒 <b>Read-only demo view</b> — a snapshot of the NexaBir Productivity workspace (synthetic data).";
+  const app = $(".app");
+  if (app) app.prepend(banner);
+  const req = $("#reqTaskBtn"); if (req) req.parentElement.style.justifyContent = "flex-end";
+}
+
+/* ---------- Theme (dark / light) ---------- */
+function currentTheme() { return state.settings.theme === "light" ? "light" : "dark"; }
+function applyTheme() {
+  const light = currentTheme() === "light";
+  document.body.classList.toggle("light", light);
+  document.body.classList.toggle("dark", !light);
+  const btn = $("#themeBtn");
+  if (btn) btn.textContent = light ? "☀️" : "🌙";
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", light ? "#f6f8f7" : "#0e1311");
+}
+function toggleTheme() {
+  state.settings.theme = currentTheme() === "light" ? "dark" : "light";
+  save();
+  applyTheme();
+  renderAll();
+}
+
+/* ---------- Bindings & init ---------- */
+$("#refreshBtn").onclick = () => API_ENABLED ? pullFromServer() : syncFromOpencode();
+$("#reqTaskBtn").onclick = () => openAddTask();
+$("#reqTaskBtn2").onclick = () => openAddTask();
+$("#reqListBtn").onclick = renderRequests;
+$("#addLinkBtn").onclick = () => openLinkForm(null);
+$("#newNoteBtn").onclick = () => createNote(noteType);
+
+/* focus & plan */
+$("#pomoStart").onclick = pomoStartPause;
+$("#pomoReset").onclick = pomoReset;
+$("#modeWork").onclick = () => pomoSwitchMode("work");
+$("#modeBreak").onclick = () => pomoSwitchMode("break");
+$("#focusWorkMin").onchange = pomoReset;
+$("#focusBreakMin").onchange = pomoReset;
+$("#mitSuggest").onclick = suggestMits;
+$("#habitAdd").onclick = addHabit;
+$("#meetingAdd").onclick = addMeeting;
+$("#weeklyReviewBtn").onclick = renderWeeklyReview;
+$("#reviewCopy").onclick = () => { navigator.clipboard.writeText(buildWeeklyReview()); toast("Weekly review copied ✓"); };
+$("#reviewDownload").onclick = () => downloadText("weekly-review-" + todayStr() + ".md", buildWeeklyReview(), "text/markdown");
+$("#reviewEmail").onclick = reviewEmail;
+
+/* header controls */
+$("#globalSearch").addEventListener("input", e => globalSearch(e.target.value));
+$("#globalSearch").addEventListener("keydown", e => { if (e.key === "Enter") { const first = $("#searchResults .search-res"); if (first) first.click(); } if (e.key === "Escape") { $("#searchResults").classList.remove("show"); } });
+$("#bellBtn").onclick = () => $("#bellDrop").classList.toggle("show");
+$("#themeBtn").onclick = toggleTheme;
+if (!READ_ONLY) $("#saveGithubBtn").onclick = saveToGitHub;
+$("#menuBtn").onclick = () => { renderMenu(); $("#menuDrop").classList.toggle("show"); };
+document.addEventListener("click", e => {
+  if (!e.target.closest(".search-wrap")) $("#searchResults").classList.remove("show");
+  if (!e.target.closest(".bell-wrap")) $("#bellDrop").classList.remove("show");
+  if (!e.target.closest(".menu-wrap")) $("#menuDrop").classList.remove("show");
+});
+
+function openModal() { $("#modalBack").classList.add("show"); }
+function closeModal() { $("#modalBack").classList.remove("show"); }
+$("#modalBack").addEventListener("click", e => { if (e.target === $("#modalBack")) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+window.createNote = createNote;
+
+async function bootstrap() {
+  applyTheme();
+  applyReadOnly();
+  migrateLegacySubtasks();
+  sessionToken = localStorage.getItem(AUTH_KEY) || null;
+  renderAll();
+  renderAuth();
+  if (API_ENABLED) {
+    const btn = $("#saveGithubBtn");
+    if (btn) btn.textContent = "💾 Save";
+    if (sessionToken) {
+      await pullFromServer();
+    } else {
+      showLogin();
+      setSync("local");
+    }
+  } else {
+    restoreFromServerIfEmpty().then(syncFromOpencode);
+    checkServer();
+  }
+}
+bootstrap();
+
+/* auth UI wiring */
+$("#loginBtn").addEventListener("click", doLogin);
+$("#loginPw").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+$("#loginEmail").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+$("#logoutBtn").addEventListener("click", logout);
+$("#changePwBtn").addEventListener("click", changePassword);
+$("#kpiCopy").addEventListener("click", kpiCopy);
+
+/* Installable app (PWA) — register service worker when served over http(s) */
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+
+/* periodic deadline checks + notifications */
+renderAlerts();
+checkDeadlineNotifications();
+setInterval(() => { renderAlerts(); }, 60000);
+if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+</script>
+</body>
+</html>
