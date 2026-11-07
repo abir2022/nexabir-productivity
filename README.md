@@ -1,3 +1,5 @@
+![Nexabir Productivity](assets/banner.svg)
+
 # NexaBir Productivity — portfolio demo PWA
 
 [![Installable PWA](https://img.shields.io/badge/PWA-installable-0F172A?style=flat)](#run-locally) [![Offline](https://img.shields.io/badge/offline-service--worker-10B981?style=flat)](sw.js) [![Data](https://img.shields.io/badge/data-synthetic-F59E0B?style=flat)](#demo-data-disclaimer)
